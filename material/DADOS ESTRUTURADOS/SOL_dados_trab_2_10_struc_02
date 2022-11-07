@@ -1,0 +1,20 @@
+
+**BEST SOLUTION AFTER POST-OPTIMIZATION**
+
+Loadest Proc. = 2
+Load          = 373
+  *********PROCESSOR 1 ***********
+ COST = 361
+11-7-5-9-6-1-11-
+
+  *********PROCESSOR 2 ***********
+ COST = 373
+12-10-2-3-8-4-12-
+
+Initial Solution       = 429.000000
+Time Initial Assigment = 0.000000
+Tabu Solution          = 373.000000
+Time Tabu Phase        = 0.000000
+Pos-Opt. Solution      = 373.000000
+Time Post Optimization = 0.000000
+Total Time             = 0.000000
