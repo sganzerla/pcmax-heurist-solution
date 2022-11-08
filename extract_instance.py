@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class InstanceData:
     def __init__(self, machines: int, jobs: int, times: list[int], setups: list[list[int]]):
         self.M = range(machines)
@@ -47,5 +50,8 @@ if __name__ == "__main__":
     # extraindo dados de uma instância
     instance = read_file(file)
 
-    # TODO 
-    # usar os dados da instance com alguma heurística
+    print(f"Machine: {len(instance.M)}")
+    print(f"Jobs: {len(instance.J)}")
+    print(f"Times: {instance.T}")
+    print("Setups")
+    print(pd.DataFrame(instance.S).T)
