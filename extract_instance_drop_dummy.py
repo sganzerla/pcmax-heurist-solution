@@ -33,7 +33,15 @@ def read_file(file) -> InstanceData:
     setups_list = [int(i) for i in str_setups.split() if i.isdigit()]
     setups_matrix = [setups_list[i::jm] for i in range(jm)]
 
-    return InstanceData(machines, jobs, times, setups_matrix)
+    df = pd.DataFrame(setups_matrix)
+
+    # apagando últimas linhas dummy
+    df.drop(df.tail(machines).index, inplace=True)
+    # apagando últimas colunas dummy
+    index_column = [i for i in range(jobs + machines) if i >= jobs]
+    df.drop(df.columns[index_column], axis=1, inplace=True)
+
+    return InstanceData(machines, jobs, times, df.T)
 
 
 if __name__ == "__main__":
@@ -46,5 +54,5 @@ if __name__ == "__main__":
     print(f"Machine: {len(instance.M)}")
     print(f"Jobs: {len(instance.J)}")
     print(f"Times: {instance.T}")
-    print("Setups")
-    print(pd.DataFrame(instance.S).T)
+    print("Matriz com Setups")
+    print(pd.DataFrame(instance.S))
