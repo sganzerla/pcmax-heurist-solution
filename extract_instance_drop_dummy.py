@@ -35,13 +35,15 @@ def read_file(file) -> InstanceData:
 
     df = pd.DataFrame(setups_matrix)
 
-    # apagando últimas linhas dummy
+    # deixando apenas uma linha dummy
     df.drop(df.tail(machines).index, inplace=True)
-    # apagando últimas colunas dummy
+    # deixando apenas uma coluna dummy
     index_column = [i for i in range(jobs + machines) if i >= jobs]
     df.drop(df.columns[index_column], axis=1, inplace=True)
 
     return InstanceData(machines, jobs, times, df.T)
+
+
 
 
 if __name__ == "__main__":
