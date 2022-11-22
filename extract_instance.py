@@ -2,8 +2,6 @@ import pandas as pd
 from optparse import OptionParser
 import time
 import os
-from io import TextIOWrapper
-
 
 class InstanceData:
     def __init__(self, machines: int, jobs: int, times: list, setups: list):
@@ -96,10 +94,7 @@ def join_setup_time(times, df):
     return M1
 
 
-if __name__ == "__main__":
-
-    # para rodar o programa executar o comando
-    # python extract_instance.py -s path_instance -o output_path + filename
+def get_params():
     parser = OptionParser()
     parser.add_option("-s", "--path", dest="path", type="string")
     parser.add_option("-o", "--output", dest="output", type="string")
@@ -108,6 +103,14 @@ if __name__ == "__main__":
 
     path = opts.path
     output = opts.output
+    
+    return path,output
+
+if __name__ == "__main__":
+
+    # para rodar o programa executar o comando
+    # python extract_instance.py -s path_instance -o output_path + filename
+    path, output = get_params()
 
     files = []
     for (root, dirs, file) in os.walk(path):
@@ -121,13 +124,13 @@ if __name__ == "__main__":
     write_file(output, "index; instance; time_extract_data; machines; jobs \n")
     
     for file in files:
+        print(f"({aux}/{n_files})")
         # marcando o tempo
         time_extract = time.time()
         instance = read_file(path + file)
         # extraindo dados de uma instância
         end = time.time()
         write_file(output, f"({aux}/{n_files}); {file}; {end - time_extract}; {len(instance.M)}; {len(instance.J)}")
-        print(f"({aux}/{n_files})")
         
         # criar método construtivo
         # write_file( escrever dados do método construtivo, lembrar de colocar o nome das colunas fora do laço)
