@@ -1,6 +1,7 @@
 import pandas as pd
 from optparse import OptionParser
 import time
+import os
 
 
 class InstanceData:
@@ -91,21 +92,32 @@ def join_setup_time(times, df):
 if __name__ == "__main__":
 
     # para rodar o programa executar o comando
-    # python extract_instance.py -r s_g01_01_0009_010_02_01.txt
+    # python extract_instance.py -s s_g01_01_0009_010_02_01.txt
     parser = OptionParser()
-    parser.add_option("-r", "--file", dest="file", type="string")
+    parser.add_option("-s", "--path", dest="path", type="string")
 
     (opts, args) = parser.parse_args()
-    print(f"Instance = {opts.file}", end=" | ")
-    file = opts.file
 
-    # marcando o tempo
-    time_extract = time.time()
-    instance = read_file(file)
-    # extraindo dados de uma instância
-    end = time.time()
+    path = opts.path
 
-    print(f"Time Extract Data = {end - time_extract}", end=" | ")
+    files = []
+    for (root, dirs, file) in os.walk(path):
+        for f in file:
+            files.append(f)
 
-    print(f"Machine = {len(instance.M)}", end=" | ")
-    print(f"Jobs = {len(instance.J)}", end=" | ")
+    n_files = len(files)
+    aux = 1
+    for file in files:
+        print(f"({aux}/{n_files}) | Instance = {file}", end=" | ")
+        # marcando o tempo
+        time_extract = time.time()
+        instance = read_file(path + file)
+        # extraindo dados de uma instância
+        end = time.time()
+
+        print(f"Time Extract Data = {end - time_extract}", end=" | ")
+
+        print(f"Machine = {len(instance.M)}", end=" | ")
+        print(f"Jobs = {len(instance.J)}", end=" | ")
+        print()
+        aux += 1
