@@ -2,6 +2,7 @@ import pandas as pd
 from optparse import OptionParser
 import time
 import os
+from io import TextIOWrapper
 
 
 class InstanceData:
@@ -10,6 +11,12 @@ class InstanceData:
         self.J = range(jobs)
         self.T = times
         self.S = setups
+
+
+def write_file(file_report, text):
+    file = open(file_report, 'a')
+    file.write(text)
+    file.close()
 
 
 def extract_machines(data):
@@ -92,13 +99,15 @@ def join_setup_time(times, df):
 if __name__ == "__main__":
 
     # para rodar o programa executar o comando
-    # python extract_instance.py -s s_g01_01_0009_010_02_01.txt
+    # python extract_instance.py -s path_instance -o output_path + filename
     parser = OptionParser()
     parser.add_option("-s", "--path", dest="path", type="string")
+    parser.add_option("-o", "--output", dest="output", type="string")
 
     (opts, args) = parser.parse_args()
 
     path = opts.path
+    output = opts.output
 
     files = []
     for (root, dirs, file) in os.walk(path):
@@ -107,17 +116,24 @@ if __name__ == "__main__":
 
     n_files = len(files)
     aux = 1
+
+    # coloca o cabeçalho no relatório, colunas separadas por ponto e vírgula e o fim da linha indicado \n
+    write_file(output, "index; instance; time_extract_data; machines; jobs \n")
+    
     for file in files:
-        print(f"({aux}/{n_files}) | Instance = {file}", end=" | ")
         # marcando o tempo
         time_extract = time.time()
         instance = read_file(path + file)
         # extraindo dados de uma instância
         end = time.time()
-
-        print(f"Time Extract Data = {end - time_extract}", end=" | ")
-
-        print(f"Machine = {len(instance.M)}", end=" | ")
-        print(f"Jobs = {len(instance.J)}", end=" | ")
-        print()
+        write_file(output, f"({aux}/{n_files}); {file}; {end - time_extract}; {len(instance.M)}; {len(instance.J)}")
+        print(f"({aux}/{n_files})")
+        
+        # criar método construtivo
+        # write_file( escrever dados do método construtivo, lembrar de colocar o nome das colunas fora do laço)
+        
+        # criar método busca local
+        # write_file( dados do método busca local, lembrar de colocar o nome das colunas fora do laço)
+        
+        write_file(output, "\n")
         aux += 1
