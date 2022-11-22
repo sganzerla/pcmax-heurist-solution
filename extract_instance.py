@@ -1,5 +1,6 @@
 import pandas as pd
 from optparse import OptionParser
+import time
 
 
 class InstanceData:
@@ -77,10 +78,8 @@ def read_file(file) -> InstanceData:
                 M1[i][j] = df[j][i] + 0
             else:
                 M1[i][j] = df[j][i] + int(times[j])
-    print()
-    print(pd.DataFrame(M1))
 
-    return InstanceData(machines, jobs, times, df.T)
+    return InstanceData(machines, jobs, times, pd.DataFrame(M1))
 
 
 if __name__ == "__main__":
@@ -91,8 +90,16 @@ if __name__ == "__main__":
     parser.add_option("-r", "--file", dest="file", type="string")
 
     (opts, args) = parser.parse_args()
-    print(f"Instance{opts.file}", end=" ")
+    print(f"Instance = {opts.file}", end=" | ")
     file = opts.file
 
-    # extraindo dados de uma instância
+    # marcando o tempo
+    start = time.time()
     instance = read_file(file)
+    # extraindo dados de uma instância
+    end = time.time()
+    
+    print(f"Time Extract Data = {end - start}", end=" | ")
+    print(f"Machine = {len(instance.M)}", end = " | ")
+    print(f"Jobs = {len(instance.J)}", end = " | ")
+
