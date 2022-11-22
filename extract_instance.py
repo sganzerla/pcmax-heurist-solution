@@ -1,8 +1,8 @@
 import pandas as pd
-
+from optparse import OptionParser
 
 class InstanceData:
-    def __init__(self, machines: int, jobs: int, times: list[int], setups: list[list[int]]):
+    def __init__(self, machines: int, jobs: int, times: list, setups: list):
         self.M = range(machines)
         self.J = range(jobs)
         self.T = times
@@ -36,10 +36,12 @@ def read_file(file) -> InstanceData:
     df = pd.DataFrame(setups_matrix)
 
     # deixando apenas uma linha dummy
-    df.drop(df.tail(machines).index, inplace=True)
+    df.drop(df.tail(machines - 1).index, inplace=True)
     # deixando apenas uma coluna dummy
-    index_column = [i for i in range(jobs + machines) if i >= jobs]
+    index_column = [i for i in range(jobs + machines) if i - 1 >= jobs]
     df.drop(df.columns[index_column], axis=1, inplace=True)
+
+
 
     return InstanceData(machines, jobs, times, df.T)
 
@@ -48,8 +50,14 @@ def read_file(file) -> InstanceData:
 
 if __name__ == "__main__":
 
-    file = 's_g01_01_0009_010_02_01.txt'
-
+    # para rodar o programa executar o comando
+    # python extract_instance.py -r s_g01_01_0009_010_02_01.txt
+    parser = OptionParser()
+    parser.add_option("-r", "--file", dest= "file", type="string")
+    
+    (opts, args ) = parser.parse_args()
+    print(f"Instance{opts.file}")
+    file = opts.file
     # extraindo dados de uma instância
     instance = read_file(file)
 
