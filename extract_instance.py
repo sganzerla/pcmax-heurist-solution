@@ -64,22 +64,28 @@ def read_file(file) -> InstanceData:
 
     df = remove_excess_cell(machines, jobs, setups_matrix)
 
-    # transpoe matriz
-    df = df.T
+    M1 = join_setup_time(times, df)
+
+    return InstanceData(machines, jobs, times, pd.DataFrame(M1))
+
+
+def join_setup_time(times, df):
 
     # soma 1 da coluna fake
     t = len(times) + 1
+    # transpoe matriz
+    df = df.T
 
     M1 = [[0 for _ in range(t)] for _ in range(t)]
     M1[0][0] = df[0][0]
     for i in range(t):
         for j in range(t):
+            # diagonal, ultima linha e ultima coluna permanecem o mesmo valor
             if i == j or i == t - 1 or j == t - 1:
-                M1[i][j] = df[j][i] + 0
+                M1[i][j] = df[j][i]
             else:
                 M1[i][j] = df[j][i] + int(times[j])
-
-    return InstanceData(machines, jobs, times, pd.DataFrame(M1))
+    return M1
 
 
 if __name__ == "__main__":
@@ -94,12 +100,12 @@ if __name__ == "__main__":
     file = opts.file
 
     # marcando o tempo
-    start = time.time()
+    time_extract = time.time()
     instance = read_file(file)
     # extraindo dados de uma instância
     end = time.time()
-    
-    print(f"Time Extract Data = {end - start}", end=" | ")
-    print(f"Machine = {len(instance.M)}", end = " | ")
-    print(f"Jobs = {len(instance.J)}", end = " | ")
 
+    print(f"Time Extract Data = {end - time_extract}", end=" | ")
+
+    print(f"Machine = {len(instance.M)}", end=" | ")
+    print(f"Jobs = {len(instance.J)}", end=" | ")
