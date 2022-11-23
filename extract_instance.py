@@ -2,7 +2,7 @@ import pandas as pd
 from optparse import OptionParser
 import time
 import os
-
+import numpy as np
 class InstanceData:
     def __init__(self, machines: int, jobs: int, times: list, setups: list):
         self.M = range(machines)
@@ -82,7 +82,7 @@ def join_setup_time(times, df):
     # transpoe matriz
     df = df.T
 
-    M1 = [[0 for _ in range(t)] for _ in range(t)]
+    M1 = np.zeros((t, t))
     M1[0][0] = df[0][0]
     for i in range(t):
         for j in range(t):
