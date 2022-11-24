@@ -5,6 +5,12 @@ import os
 import numpy as np
 
 
+class SolutionData:
+    def __init__(self, sol: list, fo: int):
+        self.sol = sol
+        self.fo = fo
+
+
 class InstanceData:
     def __init__(self, machines: int, jobs: int, times: list, setups: list, time_report: float):
         self.M = range(machines)
@@ -12,6 +18,10 @@ class InstanceData:
         self.T = times
         self.S = setups
         self.time_report = time_report
+
+    def save_to_file(self, file):
+        write_file(
+            file, f" {instance.time_report}; {len(instance.M)}; {len(instance.J)}")
 
 
 def write_file(file_report, text):
@@ -90,7 +100,7 @@ def join_setup_time(times, df):
     # transpoe matriz
     df = df.T
 
-    M1 = np.zeros((t, t))
+    M1 = np.zeros((t, t), dtype=int)
     M1[0][0] = df[0][0]
     for i in range(t):
         for j in range(t):
@@ -107,7 +117,7 @@ def get_params():
     parser.add_option("-s", "--path", dest="path", type="string")
     parser.add_option("-o", "--output", dest="output", type="string")
 
-    (opts, args) = parser.parse_args()
+    (opts, _) = parser.parse_args()
 
     path = opts.path
     output = opts.output
@@ -115,10 +125,32 @@ def get_params():
     return path, output
 
 
-def build_construtive(matrix: pd.DataFrame, n_jobs: int):
+def build_construtive(instance: InstanceData):
 
-    a = np.array(matrix, dtype=int)
-  
+    a = np.array(instance.S, dtype=int)
+
+    sol = {}
+
+    # iterar linha por linha e descobrir qual o menor valor
+    # adicionar o indice da tarefa na máquina de de menor custo
+    
+    makespan = 0
+    maquina_menos_carregada = 0
+    
+    matriz = instance.S
+    print(matriz)
+    for i in range(len(instance.J)):
+        # seleciona só a linha da matriz
+        row = a[i]
+        # ignora a coluna com o tempo de preparacao
+        row = row[instance.J]
+        print(row)
+        menor_da_linha = np.amin(row)
+        index = np.where(row == menor_da_linha)[0][0]
+        print("linha:", i, "min:", menor_da_linha, "index:", index)
+
+        # acumular os valores
+
 
 if __name__ == "__main__":
 
@@ -140,14 +172,17 @@ if __name__ == "__main__":
     for file in files:
         print(f"({aux}/{n_files})")
 
+        # escrevendo identificador da instancia
+        write_file(output, f"({aux}/{n_files}); {file};")
+
         # extraindo dados de uma instância
         instance = read_file(path + file)
 
-        write_file(
-            output, f"({aux}/{n_files}); {file}; {instance.time_report}; {len(instance.M)}; {len(instance.J)}")
+        # escrevendo dados extraidos da instancia
+        instance.save_to_file(output)
 
         # criar método construtivo
-        build_construtive(instance.S, len(instance.J))
+        build_construtive(instance)
 
         # criar método busca local
         # write_file( dados do método busca local, lembrar de colocar o nome das colunas fora do laço)
