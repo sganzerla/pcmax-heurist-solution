@@ -3,12 +3,15 @@ from optparse import OptionParser
 import time
 import os
 import numpy as np
+
+
 class InstanceData:
-    def __init__(self, machines: int, jobs: int, times: list, setups: list):
+    def __init__(self, machines: int, jobs: int, times: list, setups: list, time_report: float):
         self.M = range(machines)
         self.J = range(jobs)
         self.T = times
         self.S = setups
+        self.time_report = time_report
 
 
 def write_file(file_report, text):
@@ -56,6 +59,9 @@ def remove_excess_cell(machines, jobs, setups_matrix):
 
 def read_file(file) -> InstanceData:
 
+    # marcando o tempo
+    time_extract = time.time()
+
     # gera um vetor com conteudo de cada linha em cada posição
     data = open(file, 'r').readlines()
 
@@ -72,7 +78,9 @@ def read_file(file) -> InstanceData:
 
     M1 = join_setup_time(times, df)
 
-    return InstanceData(machines, jobs, times, pd.DataFrame(M1))
+    end = time.time()
+
+    return InstanceData(machines, jobs, times, pd.DataFrame(M1), end - time_extract)
 
 
 def join_setup_time(times, df):
@@ -103,8 +111,14 @@ def get_params():
 
     path = opts.path
     output = opts.output
-    
-    return path,output
+
+    return path, output
+
+
+def build_construtive(matrix: pd.DataFrame, n_jobs: int):
+
+    a = np.array(matrix, dtype=int)
+  
 
 if __name__ == "__main__":
 
@@ -122,21 +136,21 @@ if __name__ == "__main__":
 
     # coloca o cabeçalho no relatório, colunas separadas por ponto e vírgula e o fim da linha indicado \n
     write_file(output, "index; instance; time_extract_data; machines; jobs \n")
-    
+
     for file in files:
         print(f"({aux}/{n_files})")
-        # marcando o tempo
-        time_extract = time.time()
-        instance = read_file(path + file)
+
         # extraindo dados de uma instância
-        end = time.time()
-        write_file(output, f"({aux}/{n_files}); {file}; {end - time_extract}; {len(instance.M)}; {len(instance.J)}")
-        
+        instance = read_file(path + file)
+
+        write_file(
+            output, f"({aux}/{n_files}); {file}; {instance.time_report}; {len(instance.M)}; {len(instance.J)}")
+
         # criar método construtivo
-        # write_file( escrever dados do método construtivo, lembrar de colocar o nome das colunas fora do laço)
-        
+        build_construtive(instance.S, len(instance.J))
+
         # criar método busca local
         # write_file( dados do método busca local, lembrar de colocar o nome das colunas fora do laço)
-        
+
         write_file(output, "\n")
         aux += 1
