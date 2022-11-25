@@ -133,35 +133,47 @@ def get_params():
 
 def build_construtive(instance: InstanceData):
 
-     # marcando o tempo
+    # marcando o tempo
     time_start = time.time()
-    
-    matriz = np.array(instance.S, dtype=int)
+
+    matrix = np.array(instance.S, dtype=int)
 
     # cria matriz n linhas com zero colunas
     machine_times = [[] for _ in instance.M]
-    
-    # acumular o tempo total em cada máquina 
-    ttm = np.zeros(len(instance.M), dtype=int)
-    
-    for i in range(len(instance.J)):
-        # seleciona só uma linha da matriz
-        row = matriz[i]
-        # ignora as colunas do setup
-        row = row[:len(instance.J)]
-        # ignora colunas já selecionadas
-        min_time = np.amin(row)
-        index_job = int(np.where(row == min_time)[0][0])
 
-        maq = np.min(ttm)
-        index_machine = int(np.where(ttm == maq)[0][0])
-        machine_times[index_machine].append(index_job)
-        ttm[index_machine] = ttm[index_machine] + min_time
+    # acumular o tempo total em cada máquina
+    total_time_machine = np.zeros(len(instance.M), dtype=int)
 
-    makespan = np.max(ttm)
+    for i in range(len(matrix)):
+        # seleciona só uma linha da matriz e ignora as colunas do setup
+        row = matrix[i][:len(instance.J)]
+
+        # menor elemento da linha
+        min_job = np.amin(row)
+        # indice do menor elemento
+        idx_min_job = int(np.where(row == min_job)[0][0])
+
+        # valor da máquina menos carregada
+        maq = np.min(total_time_machine)
+        # indice da máquina menos carregada
+        idx_machine = int(np.where(total_time_machine == maq)[0][0])
+
+        # quando máquina só tem um item, acumulo o tempo de preparacao inicial
+        if len(machine_times[idx_machine]) == 1:
+            first_job: dict = machine_times[idx_machine][0]
+            _, y  = list(first_job.keys())[0]
+            total_time_machine[idx_machine] += matrix[len(instance.J)][y]
+            
+        # acumular tempo do job a maquina menos carregada
+        total_time_machine[idx_machine] += min_job
+
+        # adicionando o job ao conjunto de tarefas da máquina
+        machine_times[idx_machine].append({(i, idx_min_job): min_job})
+
+    makespan = np.max(total_time_machine)
     end = time.time()
-    
     return SolutionData(machine_times, makespan, end - time_start)
+
 
 if __name__ == "__main__":
 
@@ -178,7 +190,8 @@ if __name__ == "__main__":
     aux = 1
 
     # coloca o cabeçalho no relatório, colunas separadas por ponto e vírgula e o fim da linha indicado \n
-    write_file(output, "index; instance; time_extract_data; machines; jobs; time_construtive; fo; solution; \n")
+    write_file(
+        output, "index; instance; time_extract_data; machines; jobs; time_construtive; fo; solution; \n")
 
     for file in files:
         print(f"({aux}/{n_files})")
