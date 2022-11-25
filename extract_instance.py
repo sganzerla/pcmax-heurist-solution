@@ -6,9 +6,15 @@ import numpy as np
 
 
 class SolutionData:
-    def __init__(self, sol: list, fo: int):
+    def __init__(self, sol: list, fo: int, time_report: float):
         self.sol = sol
         self.fo = fo
+        self.time_report = time_report
+
+    def save_to_file(self, file):
+        write_file(
+            file, f"{self.time_report}; {self.fo}; {self.sol}; "
+        )
 
 
 class InstanceData:
@@ -21,7 +27,7 @@ class InstanceData:
 
     def save_to_file(self, file):
         write_file(
-            file, f" {instance.time_report}; {len(instance.M)}; {len(instance.J)}")
+            file, f" {instance.time_report}; {len(instance.M)}; {len(instance.J)}; ")
 
 
 def write_file(file_report, text):
@@ -70,7 +76,7 @@ def remove_excess_cell(machines, jobs, setups_matrix):
 def read_file(file) -> InstanceData:
 
     # marcando o tempo
-    time_extract = time.time()
+    time_start = time.time()
 
     # gera um vetor com conteudo de cada linha em cada posição
     data = open(file, 'r').readlines()
@@ -90,7 +96,7 @@ def read_file(file) -> InstanceData:
 
     end = time.time()
 
-    return InstanceData(machines, jobs, times, pd.DataFrame(M1), end - time_extract)
+    return InstanceData(machines, jobs, times, pd.DataFrame(M1), end - time_start)
 
 
 def join_setup_time(times, df):
@@ -127,30 +133,35 @@ def get_params():
 
 def build_construtive(instance: InstanceData):
 
-    a = np.array(instance.S, dtype=int)
-
-    sol = {}
-
-    # iterar linha por linha e descobrir qual o menor valor
-    # adicionar o indice da tarefa na máquina de de menor custo
+     # marcando o tempo
+    time_start = time.time()
     
-    makespan = 0
-    maquina_menos_carregada = 0
+    matriz = np.array(instance.S, dtype=int)
+
+    # cria matriz n linhas com zero colunas
+    machine_times = [[] for _ in instance.M]
     
-    matriz = instance.S
-    print(matriz)
+    # acumular o tempo total em cada máquina 
+    ttm = np.zeros(len(instance.M), dtype=int)
+    
     for i in range(len(instance.J)):
-        # seleciona só a linha da matriz
-        row = a[i]
-        # ignora a coluna com o tempo de preparacao
-        row = row[instance.J]
-        print(row)
-        menor_da_linha = np.amin(row)
-        index = np.where(row == menor_da_linha)[0][0]
-        print("linha:", i, "min:", menor_da_linha, "index:", index)
+        # seleciona só uma linha da matriz
+        row = matriz[i]
+        # ignora as colunas do setup
+        row = row[:len(instance.J)]
+        # ignora colunas já selecionadas
+        min_time = np.amin(row)
+        index_job = int(np.where(row == min_time)[0][0])
 
-        # acumular os valores
+        maq = np.min(ttm)
+        index_machine = int(np.where(ttm == maq)[0][0])
+        machine_times[index_machine].append(index_job)
+        ttm[index_machine] = ttm[index_machine] + min_time
 
+    makespan = np.max(ttm)
+    end = time.time()
+    
+    return SolutionData(machine_times, makespan, end - time_start)
 
 if __name__ == "__main__":
 
@@ -167,7 +178,7 @@ if __name__ == "__main__":
     aux = 1
 
     # coloca o cabeçalho no relatório, colunas separadas por ponto e vírgula e o fim da linha indicado \n
-    write_file(output, "index; instance; time_extract_data; machines; jobs \n")
+    write_file(output, "index; instance; time_extract_data; machines; jobs; time_construtive; fo; solution; \n")
 
     for file in files:
         print(f"({aux}/{n_files})")
@@ -182,7 +193,9 @@ if __name__ == "__main__":
         instance.save_to_file(output)
 
         # criar método construtivo
-        build_construtive(instance)
+        constr = build_construtive(instance)
+
+        constr.save_to_file(output)
 
         # criar método busca local
         # write_file( dados do método busca local, lembrar de colocar o nome das colunas fora do laço)
