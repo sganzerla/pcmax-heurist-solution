@@ -167,40 +167,51 @@ def build_construtive(instance: InstanceData):
     # lista de jobs disponíveis
     unrelated_jobs = [i for i in instance.S]
     # acumular o tempo total em cada máquina
-    total_time_machine = np.zeros(len(instance.M), dtype=int)
-    # colocando um tempo de processamento mínimo para cada máquina
-    for i in range(len(machine_times)):
+    total_time_machine = pd.Series(np.zeros(len(instance.M), dtype=int))
+    # ultimo job adicionado em cada máquina
+    last_job_machine = pd.Series(np.zeros(len(instance.M), dtype=int))
+    
+    # escolhendo o melhor job inicial para cada máquina
+    for m in range(len(machine_times)):
         # menor indice da coluna tempos de preparacao
-        row = handler.get_idx_min_by_col(len(instance.J))
+        row_idx = handler.get_idx_min_by_col(len(instance.J))
         # remove indice jobs das opcoes
-        unrelated_jobs.remove(row)
+        unrelated_jobs.remove(row_idx)
         # menor valor de tempo de preparacao
-        value = handler.get_value_cell(len(instance.J), row)
+        value_row = handler.get_value_cell(len(instance.J), row_idx)
         # altero o valor para não escolher novamente
-        handler.set_value_cell(len(instance.J), row, 1000)
-        # armazenando primeiro a máquina
-        machine_times[i].append({(len(instance.J), row): value})
+        handler.set_value_cell(len(instance.J), row_idx, 1000)
+        # armazenando primeiro job a máquina
+        machine_times[m].append({(len(instance.J), row_idx): value_row})
         # acumulando o primeiro valor
-        total_time_machine[i] += value
-
+        total_time_machine[m] += value_row
+        # informando o ultimo job de cada máquina
+        last_job_machine[m] = row_idx
     # remove indice jobs das opcoes
-    # unrelated_jobs.remove(len(instance.J))
-    for i in unrelated_jobs:
+    
+    print(last_job_machine)
+    
+    for j in unrelated_jobs:
+        
+        # indice da máquina menos carregada
+        idx_machine = total_time_machine.idxmin()
+        
+        # ultimo job adicionado da máquina
+        last_job = last_job_machine[idx_machine]
+        
         # menor indice da coluna tempos de preparacao
-        row = handler.get_idx_min_by_col(i)
+        row_idx = handler.get_idx_min_by_col(last_job)
+        
         # menor valor de tempo de preparacao
-        value = handler.get_value_cell(i, row)
+        value_row = handler.get_value_cell(last_job, row_idx)
         
         # altero o valor para não escolher novamente
-        handler.set_value_cell(i, row, 1000)
+        handler.set_value_cell(last_job, row_idx, 1000)
         
-        # valor da máquina menos carregada
-        maq = np.min(total_time_machine)
-        # indice da máquina menos carregada
-        idx_machine = int(np.where(total_time_machine == maq)[0][0])
+       
         
-        machine_times[idx_machine].append({(i, row): value})
-        total_time_machine[idx_machine] += value
+        machine_times[idx_machine].append({(last_job, row_idx): value_row})
+        total_time_machine[idx_machine] += value_row
 
 
     for i in range(len(machine_times)):
