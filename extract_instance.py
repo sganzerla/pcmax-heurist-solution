@@ -8,7 +8,7 @@ import numpy as np
 class SolutionHandler:
 
     def __init__(self, setup_matrix: pd.DataFrame):
-        self.matrix = setup_matrix
+        self.matrix = setup_matrix.T
 
     # retorna vetor com os indices da linha de menor valor em cada coluna
     def get_all_idx_min_by_col(self) -> pd.Series:
@@ -22,6 +22,8 @@ class SolutionHandler:
     def get_value_cell(self, x, y) -> int:
         return self.matrix[x][y]
 
+    def set_value_cell(self, x, y, value):
+        self.matrix[x][y] = value
 
 
 class ExtractData:
@@ -156,44 +158,56 @@ def get_params():
 
 
 def build_construtive(instance: InstanceData):
-    
+
+    handler = SolutionHandler(instance.S)
     # marcando o tempo
     time_start = time.time()
-
-    matrix = np.array(instance.S, dtype=int)
-
     # cria matriz n linhas com zero colunas
     machine_times = [[] for _ in instance.M]
-
+    # lista de jobs disponíveis
+    unrelated_jobs = [i for i in instance.S]
     # acumular o tempo total em cada máquina
     total_time_machine = np.zeros(len(instance.M), dtype=int)
+    # colocando um tempo de processamento mínimo para cada máquina
+    for i in range(len(machine_times)):
+        # menor indice da coluna tempos de preparacao
+        row = handler.get_idx_min_by_col(len(instance.J))
+        # remove indice jobs das opcoes
+        unrelated_jobs.remove(row)
+        # menor valor de tempo de preparacao
+        value = handler.get_value_cell(len(instance.J), row)
+        # altero o valor para não escolher novamente
+        handler.set_value_cell(len(instance.J), row, 1000)
+        # armazenando primeiro a máquina
+        machine_times[i].append({(len(instance.J), row): value})
+        # acumulando o primeiro valor
+        total_time_machine[i] += value
 
-    for i in range(len(matrix)):
-        # seleciona só uma linha da matriz e ignora as colunas do setup
-        row = matrix[i][:len(instance.J)]
-
-        # menor elemento da linha
-        min_job = np.amin(row)
-        # indice do menor elemento
-        idx_min_job = int(np.where(row == min_job)[0][0])
-
+    # remove indice jobs das opcoes
+    # unrelated_jobs.remove(len(instance.J))
+    for i in unrelated_jobs:
+        # menor indice da coluna tempos de preparacao
+        row = handler.get_idx_min_by_col(i)
+        # menor valor de tempo de preparacao
+        value = handler.get_value_cell(i, row)
+        
+        # altero o valor para não escolher novamente
+        handler.set_value_cell(i, row, 1000)
+        
         # valor da máquina menos carregada
         maq = np.min(total_time_machine)
         # indice da máquina menos carregada
         idx_machine = int(np.where(total_time_machine == maq)[0][0])
+        
+        machine_times[idx_machine].append({(i, row): value})
+        total_time_machine[idx_machine] += value
 
-        # quando máquina só tem um item, acumulo o tempo de preparacao inicial
-        # if len(machine_times[idx_machine]) == 1:
-        #     first_job: dict = machine_times[idx_machine][0]
-        #     _, y  = list(first_job.keys())[0]
-        #     total_time_machine[idx_machine] += matrix[len(instance.J)][y]
 
-        # acumular tempo do job a maquina menos carregada
-        total_time_machine[idx_machine] += min_job
-
-        # adicionando o job ao conjunto de tarefas da máquina
-        machine_times[idx_machine].append({(i, idx_min_job): min_job})
-
+    for i in range(len(machine_times)):
+        jobs = machine_times[i]
+        last_job = jobs[len(jobs) - 1]
+        print(last_job)
+        
     makespan = np.max(total_time_machine)
     end = time.time()
     return SolutionData(machine_times, makespan, end - time_start)
