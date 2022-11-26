@@ -28,22 +28,21 @@ class Extract:
         setups_matrix = [setups_1_dim[i::jm] for i in range(jm)]
         return np.array(setups_matrix)
 
+    def __read_file__(self, file):
+
+        return open(file, 'r').readlines()
     
     def to_string(self):
         print(f"M: {self.__M}\nJ: {self.__J}\nT: {self.__T}\nS: {self.__S}")
-     
-
-
-
-
-
-
-
-    def __read_file__(self, file):
-
-         # gera um vetor com conteudo de cada linha em cada posição
-        data = open(file, 'r').readlines()
-
-        return data
     
-        
+    def get_M(self) -> int:
+        return self.__M
+
+    def get_J(self) -> int:
+        return self.__J
+    
+    def get_T(self) -> np.array:
+        return self.__T
+
+    def get_S(self) -> np.array:
+        return self.__S
