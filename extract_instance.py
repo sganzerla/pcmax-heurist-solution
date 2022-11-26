@@ -25,6 +25,11 @@ class SolutionHandler:
     def set_value_cell(self, x, y, value):
         self.matrix[x][y] = value
 
+    def get_max_value(self) -> int:
+        biggests = self.matrix.max()
+        return biggests.max()
+
+
 class ExtractData:
     def __init__(self, path):
         self.path = path
@@ -169,7 +174,8 @@ def build_construtive(instance: InstanceData):
     total_time_machine = pd.Series(np.zeros(len(instance.M), dtype=int))
     # ultimo job adicionado em cada máquina
     last_job_machine = pd.Series(np.zeros(len(instance.M), dtype=int))
-
+    # obtendo o maior valor da matriz
+    biggest_value = handler.get_max_value() + 1
     # escolhendo o melhor job inicial para cada máquina
     for m in instance.M:
         # indice da coluna com menor tempo de preparacao
@@ -177,8 +183,7 @@ def build_construtive(instance: InstanceData):
         # menor valor de tempo de preparacao
         value_row = handler.get_value_cell(len(instance.J), row_idx)
         # altero o valor para não escolher novamente
-        # TODO esse 1000 não pode ser fixo, descobrir dinamicamente maior valor
-        handler.set_value_cell(len(instance.J), row_idx, 1000)
+        handler.set_value_cell(len(instance.J), row_idx, biggest_value)
         # armazenando primeiro job a máquina
         machine_times[m].append({(len(instance.J), row_idx): value_row})
         # acumulando o primeiro valor
@@ -187,7 +192,7 @@ def build_construtive(instance: InstanceData):
         last_job_machine[m] = row_idx
         # remove indice do jobs das opcoes disponiveis
         unrelated_jobs.remove(row_idx)
-        
+
     # remove indice jobs das opcoes
     unrelated_jobs.remove(len(instance.J))
 
@@ -207,8 +212,8 @@ def build_construtive(instance: InstanceData):
     # adicionando o tempo de encerramento de cada máquina
     for i in instance.M:
         # ultimo job de cada máquina
-        last_job =  last_job_machine[i]
-        # valor do ultimo job até tempo de 
+        last_job = last_job_machine[i]
+        # valor do ultimo job até tempo de
         value_row = handler.get_value_cell(last_job, len(instance.J))
         machine_times[i].append({(last_job, len(instance.J)): value_row})
         total_time_machine[i] += value_row
