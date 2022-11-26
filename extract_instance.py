@@ -4,6 +4,7 @@ import time
 import os
 import numpy as np
 
+from Instance import *
 
 class SolutionHandler:
 
@@ -229,37 +230,41 @@ if __name__ == "__main__":
     # python extract_instance.py -s path_instance -o output_path + filename
     path, output = get_params()
 
-    files = []
-    for (root, dirs, file) in os.walk(path):
-        for f in file:
-            files.append(f)
+    
+    I = Instance(2, [1,4], np.array([[1,3,4], [1,3,4], [1,3,4]]))
+    I.to_string()
 
-    n_files = len(files)
-    aux = 1
+    # files = []
+    # for (root, dirs, file) in os.walk(path):
+    #     for f in file:
+    #         files.append(f)
 
-    # coloca o cabeçalho no relatório, colunas separadas por ponto e vírgula e o fim da linha indicado \n
-    write_file(
-        output, "index; instance; time_extract_data; machines; jobs; time_construtive; fo; solution; \n")
+    # n_files = len(files)
+    # aux = 1
 
-    for file in files:
-        print(f"({aux}/{n_files})")
+    # # coloca o cabeçalho no relatório, colunas separadas por ponto e vírgula e o fim da linha indicado \n
+    # write_file(
+    #     output, "index; instance; time_extract_data; machines; jobs; time_construtive; fo; solution; \n")
 
-        # escrevendo identificador da instancia
-        write_file(output, f"({aux}/{n_files}); {file};")
+    # for file in files:
+    #     print(f"({aux}/{n_files})")
 
-        # extraindo dados de uma instância
-        instance = read_file(path + file)
+    #     # escrevendo identificador da instancia
+    #     write_file(output, f"({aux}/{n_files}); {file};")
 
-        # escrevendo dados extraidos da instancia
-        instance.save_to_file(output)
+    #     # extraindo dados de uma instância
+    #     instance = read_file(path + file)
 
-        # criar método construtivo
-        constr = build_construtive(instance)
+    #     # escrevendo dados extraidos da instancia
+    #     instance.save_to_file(output)
 
-        constr.save_to_file(output)
+    #     # criar método construtivo
+    #     constr = build_construtive(instance)
 
-        # criar método busca local
-        # write_file( dados do método busca local, lembrar de colocar o nome das colunas fora do laço)
+    #     constr.save_to_file(output)
 
-        write_file(output, "\n")
-        aux += 1
+    #     # criar método busca local
+    #     # write_file( dados do método busca local, lembrar de colocar o nome das colunas fora do laço)
+
+    #     write_file(output, "\n")
+    #     aux += 1
