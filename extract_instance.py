@@ -5,6 +5,30 @@ import os
 import numpy as np
 
 
+class SolutionHandler:
+
+    def __init__(self, setup_matrix: pd.DataFrame):
+        self.matrix = setup_matrix
+
+    # retorna vetor com os indices da linha de menor valor em cada coluna
+    def get_all_idx_min_by_col(self) -> pd.Series:
+        return self.matrix.idxmin(axis="columns")
+
+    #  retorna o indice da linha de menor valor da coluna selecionada
+    def get_idx_min_by_col(self, col) -> int:
+        collumn = self.matrix[col]
+        return collumn.idxmin()
+
+    def get_value_cell(self, x, y) -> int:
+        return self.matrix[x][y]
+
+
+
+class ExtractData:
+    def __init__(self, path):
+        self.path = path
+
+
 class SolutionData:
     def __init__(self, sol: list, fo: int, time_report: float):
         self.sol = sol
@@ -132,7 +156,7 @@ def get_params():
 
 
 def build_construtive(instance: InstanceData):
-
+    
     # marcando o tempo
     time_start = time.time()
 
@@ -159,11 +183,11 @@ def build_construtive(instance: InstanceData):
         idx_machine = int(np.where(total_time_machine == maq)[0][0])
 
         # quando máquina só tem um item, acumulo o tempo de preparacao inicial
-        if len(machine_times[idx_machine]) == 1:
-            first_job: dict = machine_times[idx_machine][0]
-            _, y  = list(first_job.keys())[0]
-            total_time_machine[idx_machine] += matrix[len(instance.J)][y]
-            
+        # if len(machine_times[idx_machine]) == 1:
+        #     first_job: dict = machine_times[idx_machine][0]
+        #     _, y  = list(first_job.keys())[0]
+        #     total_time_machine[idx_machine] += matrix[len(instance.J)][y]
+
         # acumular tempo do job a maquina menos carregada
         total_time_machine[idx_machine] += min_job
 
