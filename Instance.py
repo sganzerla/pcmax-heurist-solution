@@ -10,7 +10,7 @@ class Instance:
     def __join_times__(self, S: np.array) -> np.array:
         n = self.get_N()
         for i in range(n):
-            S[i][:] = S[i][:] + self.__P[i]
+            S[i][0:n] = S[i][0:n] + self.__P[i]
         return S
     
     
@@ -21,6 +21,7 @@ class Instance:
         return self.__M
     
     def get_N(self) -> int:
+    
         return self.__N
     
     def get_P(self, i)-> int:
