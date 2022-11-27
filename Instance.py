@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 class Instance:
@@ -17,7 +16,7 @@ class Instance:
 
     def to_string(self):
         print(
-            f"M: {self.__M}\nN: {self.__N}\nP: {self.__P}\nS: {pd.DataFrame(self.__S).T}")
+            f"M: {self.__M}\nN: {self.__N}\nP: {self.__P}\nS: {self.__S}")
 
     def get_M(self) -> int:
         return self.__M
@@ -28,5 +27,8 @@ class Instance:
     def get_P(self, i) -> int:
         return self.P[i]
 
-    def get_S(self, i, j) -> int:
-        return self.__S[i][j]
+    def get_S(self) -> np.array:
+        return self.__S
+
+    # def get_S(self, i, j) -> int:
+    #     return self.__S[i][j]
