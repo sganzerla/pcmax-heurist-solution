@@ -47,7 +47,7 @@ class Extract:
         return open(file, 'r').readlines()
 
     def to_string(self):
-        print(f"M: {self.__M}\nJ: {self.__N}\nT: {self.__P}\nS: {self.__S}")
+        print(f"M: {self.__M}\nN: {self.__N}\nP: {self.__P}\nS: {self.__S}")
 
     def get_M(self) -> int:
         return self.__M
