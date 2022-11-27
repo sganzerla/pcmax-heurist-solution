@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 class Instance:
     def __init__(self, M: int, P: np.array, S: np.array):
         self.__M = M
@@ -15,7 +15,7 @@ class Instance:
     
     
     def to_string(self):
-        print(f"M: {self.__M}\nN: {self.__N}\nP: {self.__P}\nS: {self.__S}")
+        print(f"M: {self.__M}\nN: {self.__N}\nP: {self.__P}\nS: {pd.DataFrame(self.__S).T}")
         
     def get_M(self) -> int:
         return self.__M

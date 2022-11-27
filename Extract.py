@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+
 
 class Extract:
     def __init__(self, path_file: str):
@@ -35,14 +35,12 @@ class Extract:
         return reduced_border
 
     def __reduce_border__(self, S: np.array) -> np.array:
-        print(pd.DataFrame(S))
         jobs = self.get_N()
         jm = jobs + self.get_M()
+        # corte da matriz colunas j + 1 até j + m
         S = np.delete(S, slice(jobs + 1, jm), axis=1)
-        print(pd.DataFrame(S))
+        # corte da matriz linhas j + 1 até j + m
         S = np.delete(S, slice(jobs + 1, jm), axis=0)
-        print(pd.DataFrame(S))
-        
         return S
 
     def __read_file__(self, file):
