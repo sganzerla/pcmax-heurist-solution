@@ -51,7 +51,8 @@ class ConstrutiveSolution:
         last_job_machine = pd.Series(np.zeros(m, dtype=int))
         # obtendo o maior valor da matriz
         biggest_value1 = self.get_max_value() + 1
-        # escolhendo o melhor job inicial para cada máquina
+
+        # escolhe o job com menor tempo de preparação inicial para cada máquina e adiciona os tempo de preparação
         for i in range(m):
             # indice da coluna com menor tempo de preparacao
             row_idx = self.get_idx_min_by_col(n1)
@@ -68,8 +69,7 @@ class ConstrutiveSolution:
             # remove indice do jobs das opcoes disponiveis
             unrelated_jobs.remove(row_idx)
 
-        # remove indice jobs das opcoes
-
+        # distribui os jobs na ordem que aparecem na máquina menos carregada
         for i in unrelated_jobs:
             # indice da máquina menos carregada
             idx_machine = total_time_machine.idxmin()
@@ -83,7 +83,7 @@ class ConstrutiveSolution:
             machine_times[idx_machine].append({(last_job, i): value_row})
             total_time_machine[idx_machine] += value_row
 
-        # adicionando o tempo de encerramento de cada máquina
+        # adiciona o tempo de encerramento em cada máquina com o último job
         for i in range(m):
             # ultimo job de cada máquina
             last_job = last_job_machine[i]
@@ -92,6 +92,7 @@ class ConstrutiveSolution:
             machine_times[i].append({(last_job, n1): value_row})
             total_time_machine[i] += value_row
 
+        # atualiza o makespan
         self.__Makespan = np.max(total_time_machine)
 
         return machine_times
