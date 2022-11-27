@@ -40,6 +40,6 @@ if __name__ == "__main__":
         ins = Instance(m, p, s)
         s, n = ins.get_S(), ins.get_N()
 
-        cons = ConstrutiveSolution(m, n, s)
+        cons = ConstrutiveSolution(m, n, s, Strategy.BEST)
         cons.to_string()
         aux += 1
