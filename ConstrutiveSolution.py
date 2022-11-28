@@ -5,7 +5,7 @@ from enum import Enum
 
 
 class Strategy(Enum):
-    FIRST = 1
+    NEXT = 1
     BEST = 2
 
 
@@ -75,7 +75,7 @@ class ConstrutiveSolution:
             # remove indice do jobs das opcoes disponiveis
             unrelated_jobs.remove(col_idx)
 
-        if strategy == Strategy.FIRST:
+        if strategy == Strategy.NEXT:
             # distribui os jobs na ordem que aparecem na máquina menos carregada
             for i in unrelated_jobs:
                 # indice da máquina menos carregada

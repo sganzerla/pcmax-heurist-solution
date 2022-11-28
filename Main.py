@@ -35,12 +35,14 @@ if __name__ == "__main__":
     aux = 1
     for file in files:
         print(f"({aux}/{n_files})")
+        
         ex = Extract(path + file)
         m, p, s = ex.get_M(), ex.get_P(), ex.get_S()
+        
         ins = Instance(m, p, s)
         s, n = ins.get_S(), ins.get_N()
 
-        cons = ConstrutiveSolution(m, n, s, Strategy.FIRST)
+        cons = ConstrutiveSolution(m, n, s, Strategy.NEXT)
         cons.to_string()
         
         cons = ConstrutiveSolution(m, n, s, Strategy.BEST)
