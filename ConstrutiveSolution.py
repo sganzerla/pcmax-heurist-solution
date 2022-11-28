@@ -17,8 +17,8 @@ class ConstrutiveSolution:
         self.__SClone = copy.copy(self.__S)
         self.__Max = self.__S.max().max()
         self.__Makespan = 0
-        self.__Sol = self.__build_solution__(strategy)
         self.__strategy = strategy
+        self.__Sol = self.__build_solution__(self.__strategy)
 
     def get_makespan(self) -> int:
         return self.__Makespan
@@ -33,9 +33,9 @@ class ConstrutiveSolution:
         print(
             f"M: {self.__M}\nN: {self.__N}\nS: {self.__S}\nMax: {self.__Max}\nStrategy: {self.__strategy}\nMakespan: {self.__Makespan}\nSolution: {self.__Sol}\n")
 
-    # retorna o indice da linha de menor valor da coluna selecionada
-    def __get_idx_min_by_col__(self, col: int) -> int:
-        return self.__SClone[col].idxmin()
+    # retorna o indice da coluna de menor valor da linha selecionada
+    def __get_idx_min_by_row__(self, row: int) -> int:
+        return self.__SClone.iloc[row].idxmin()
 
     def __get_S__(self, i: int, j: int) -> int:
         return self.__SClone[i][j]
@@ -61,19 +61,19 @@ class ConstrutiveSolution:
         # escolhe o job com menor tempo de preparação inicial para cada máquina e adiciona os tempo de preparação
         for i in range(m):
             # indice da coluna com menor tempo de preparacao
-            row_idx = self.__get_idx_min_by_col__(n1)
+            col_idx = self.__get_idx_min_by_row__(n1)
             # menor valor de tempo de preparacao
-            value_row = self.__get_S__(n1, row_idx)
+            value_row = self.__get_S__(col_idx, n1)
             # altero o valor para não escolher novamente
-            self.__update_S__(n1, row_idx, biggest_value1)
+            self.__update_S__(col_idx, n1, biggest_value1)
             # armazenando primeiro job a máquina
-            machine_times[i].append({(n1, row_idx): value_row})
+            machine_times[i].append({(n1, col_idx): value_row})
             # acumulando o primeiro valor
             total_time_machine[i] += value_row
             # informando o ultimo job de cada máquina
-            last_job_machine[i] = row_idx
+            last_job_machine[i] = col_idx
             # remove indice do jobs das opcoes disponiveis
-            unrelated_jobs.remove(row_idx)
+            unrelated_jobs.remove(col_idx)
 
         if strategy == Strategy.FIRST:
             # distribui os jobs na ordem que aparecem na máquina menos carregada
@@ -90,17 +90,16 @@ class ConstrutiveSolution:
                 machine_times[idx_machine].append({(last_job, i): value_row})
                 total_time_machine[idx_machine] += value_row
 
-            
         else:
             # distribui os jobs na ordem que aparecem na máquina menos carregada
             jobs = len(unrelated_jobs)
-           
+
             for _ in range(jobs):
                 # indice da máquina menos carregada
                 idx_machine = total_time_machine.idxmin()
                 # ultimo job adicionado da máquina
                 last_job = last_job_machine[idx_machine]
-                
+
                 best_job = self.__Max
                 best_job_idx = 0
                 for i in unrelated_jobs:
@@ -110,25 +109,26 @@ class ConstrutiveSolution:
                         best_job = value_row
                         best_job_idx = i
                     # informando o ultimo job de cada máquina
-                    
+
                 last_job_machine[idx_machine] = best_job_idx
 
-                machine_times[idx_machine].append({(last_job, best_job_idx): best_job})
+                machine_times[idx_machine].append(
+                    {(last_job, best_job_idx): best_job})
                 total_time_machine[idx_machine] += best_job
-                 # remove indice do jobs das opcoes disponiveis
+                # remove indice do jobs das opcoes disponiveis
                 unrelated_jobs.remove(best_job_idx)
                 # resetando variaveis auxiliares
                 best_job = self.__Max
                 best_job_idx = 0
-    
+
         # adiciona o tempo de encerramento em cada máquina com o último job
         for i in range(m):
-                # ultimo job de cada máquina
-                last_job = last_job_machine[i]
-                # valor do ultimo job até tempo de
-                value_row = self.__get_S__(last_job, n1)
-                machine_times[i].append({(last_job, n1): value_row})
-                total_time_machine[i] += value_row
+            # ultimo job de cada máquina
+            last_job = last_job_machine[i]
+            # valor do ultimo job até tempo de
+            value_row = self.__get_S__(last_job, n1)
+            machine_times[i].append({(last_job, n1): value_row})
+            total_time_machine[i] += value_row
 
             # atualiza o makespan
         self.__Makespan = np.max(total_time_machine)
