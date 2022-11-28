@@ -42,4 +42,7 @@ if __name__ == "__main__":
 
         cons = ConstrutiveSolution(m, n, s, Strategy.FIRST)
         cons.to_string()
+        
+        cons = ConstrutiveSolution(m, n, s, Strategy.BEST)
+        cons.to_string()
         aux += 1
