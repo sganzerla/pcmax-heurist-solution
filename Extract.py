@@ -22,7 +22,7 @@ class Extract:
         times = [int(i) for i in text.split() if i.isdigit()]
         return np.array(times)
 
-    def __extract_S__(self):
+    def __extract_S__(self) -> np.ndarray:
         # depois da 2 + n jobs + machines (zeros) até  total de linhas - (2 + n jobs + machines) tempos de setup
         data = self.__data
         jm = self.__N + self.__M
@@ -34,7 +34,7 @@ class Extract:
         reduced_border = self.__reduce_border__(multi_array)
         return reduced_border
 
-    def __reduce_border__(self, S: np.array) -> np.array:
+    def __reduce_border__(self, S: np.array) -> np.ndarray:
         jobs = self.get_N()
         jm = jobs + self.get_M()
         # corte da matriz colunas j + 1 até j + m
@@ -58,5 +58,5 @@ class Extract:
     def get_P(self) -> np.array:
         return self.__P
 
-    def get_S(self) -> np.array:
+    def get_S(self) -> np.ndarray:
         return self.__S
