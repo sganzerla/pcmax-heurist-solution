@@ -58,24 +58,28 @@ class ConstrutiveSolution:
         # obtendo o maior valor da matriz
         biggest_value1 = self.get_max_value() + 1
 
-        # escolhe o job com menor tempo de preparação inicial para cada máquina e adiciona os tempo de preparação
-        for i in range(m):
-            # indice da coluna com menor tempo de preparacao
-            col_idx = self.__get_idx_min_by_row__(n1)
-            # menor valor de tempo de preparacao
-            value_row = self.__get_S__(col_idx, n1)
-            # altero o valor para não escolher novamente
-            self.__update_S__(col_idx, n1, biggest_value1)
-            # armazenando primeiro job a máquina
-            machine_times[i].append({(n1, col_idx): value_row})
-            # acumulando o primeiro valor
-            total_time_machine[i] += value_row
-            # informando o ultimo job de cada máquina
-            last_job_machine[i] = col_idx
-            # remove indice do jobs das opcoes disponiveis
-            unrelated_jobs.remove(col_idx)
-
         if strategy == Strategy.NEXT:
+            
+            # escolhe o primeiro job de cada máquina na ordem que aparece e adiciona os tempo de preparação
+            for i in range(m):
+                
+                # valor de tempo de preparacao
+                value_row = self.__get_S__(i, n1)
+                # altero o valor para não escolher novamente
+                self.__update_S__(i, n1, biggest_value1)
+                # armazenando primeiro job a máquina
+                machine_times[i].append({(n1, i): value_row})
+                # acumulando o primeiro valor
+                total_time_machine[i] += value_row
+                # informando o ultimo job de cada máquina
+                last_job_machine[i] = i
+                # remove indice do jobs das opcoes disponiveis
+                unrelated_jobs.remove(i)
+
+                # distribui os jobs na ordem que aparecem na máquina menos carregada
+                jobs = len(unrelated_jobs)
+            
+            
             # distribui os jobs na ordem que aparecem na máquina menos carregada
             for i in unrelated_jobs:
                 # indice da máquina menos carregada
@@ -91,8 +95,26 @@ class ConstrutiveSolution:
                 total_time_machine[idx_machine] += value_row
 
         else:
-            # distribui os jobs na ordem que aparecem na máquina menos carregada
-            jobs = len(unrelated_jobs)
+
+            # escolhe o job com menor tempo de preparação inicial para cada máquina e adiciona os tempo de preparação
+            for i in range(m):
+                # indice da coluna com menor tempo de preparacao
+                col_idx = self.__get_idx_min_by_row__(n1)
+                # menor valor de tempo de preparacao
+                value_row = self.__get_S__(col_idx, n1)
+                # altero o valor para não escolher novamente
+                self.__update_S__(col_idx, n1, biggest_value1)
+                # armazenando primeiro job a máquina
+                machine_times[i].append({(n1, col_idx): value_row})
+                # acumulando o primeiro valor
+                total_time_machine[i] += value_row
+                # informando o ultimo job de cada máquina
+                last_job_machine[i] = col_idx
+                # remove indice do jobs das opcoes disponiveis
+                unrelated_jobs.remove(col_idx)
+
+                # distribui os jobs na ordem que aparecem na máquina menos carregada
+                jobs = len(unrelated_jobs)
 
             for _ in range(jobs):
                 # indice da máquina menos carregada
