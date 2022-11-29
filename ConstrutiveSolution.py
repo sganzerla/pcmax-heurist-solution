@@ -18,20 +18,21 @@ class ConstrutiveSolution:
         self.__Max = self.__S.max().max()
         self.__Makespan = 0
         self.__strategy = strategy
-        self.__Sol = self.__build_solution__(self.__strategy)
+        self.__Sol_Dict = self.__build_solution__(self.__strategy)
+        self.__Sol_Array = self.__dict_to_ndarray__()
 
     def get_makespan(self) -> int:
         return self.__Makespan
 
     def get_solution(self) -> np.array:
-        return self.__Sol
+        return self.__Sol_Dict
 
     def get_max_value(self) -> int:
         return self.__Max
 
     def to_string(self):
         print(
-            f"M: {self.__M}\nN: {self.__N}\nS: {self.__S}\nMax: {self.__Max}\nStrategy: {self.__strategy}\nMakespan: {self.__Makespan}\nSolution: {self.__Sol}\n")
+            f"M: {self.__M}\nN: {self.__N}\nS: {self.__S}\nMax: {self.__Max}\nStrategy: {self.__strategy}\nMakespan: {self.__Makespan}\nSolution_Dict:\n{self.__Sol_Dict}\nSolution_Array:\n{self.__Sol_Array}\n")
 
     # retorna o indice da coluna de menor valor da linha selecionada
     def __get_idx_min_by_row__(self, row: int) -> int:
@@ -59,10 +60,10 @@ class ConstrutiveSolution:
         biggest_value1 = self.get_max_value() + 1
 
         if strategy == Strategy.NEXT:
-            
+
             # escolhe o primeiro job de cada máquina na ordem que aparece e adiciona os tempo de preparação
             for i in range(m):
-                
+
                 # valor de tempo de preparacao
                 value_row = self.__get_S__(i, n1)
                 # altero o valor para não escolher novamente
@@ -78,8 +79,7 @@ class ConstrutiveSolution:
 
                 # distribui os jobs na ordem que aparecem na máquina menos carregada
                 jobs = len(unrelated_jobs)
-            
-            
+
             # distribui os jobs na ordem que aparecem na máquina menos carregada
             for i in unrelated_jobs:
                 # indice da máquina menos carregada
@@ -156,3 +156,16 @@ class ConstrutiveSolution:
         self.__Makespan = np.max(total_time_machine)
 
         return machine_times
+
+    def __dict_to_ndarray__(self) -> np.ndarray:
+
+        # crio a matriz com os n nós de jobs + 2 que serão os arcos de entrada e saída
+        solution = np.zeros((self.__M, self.__N + 2), dtype=int)
+        aux = 0
+        for i in range(self.__M):
+            for j in self.__Sol_Dict[i]:
+                k, m = list(j.keys())[0]
+                solution[0][aux] = k
+                solution[1][aux] = m
+                aux += 1
+        return solution
