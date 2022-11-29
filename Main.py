@@ -1,6 +1,7 @@
 from Instance import *
 from Extract import *
 from Solution import *
+from ConstrutiveSolution import *
 from optparse import OptionParser
 import os
  
@@ -41,13 +42,10 @@ if __name__ == "__main__":
         m, p, s = ex.get_M(), ex.get_P(), ex.get_S()
         ins = Instance(m, p, s)
         solu = Solution(ins)
-        solu.insert_job(0,0,10)
-        solu.insert_job(0,1,0)
-        solu.insert_job(1,2,11)
         solu.to_string()
-        print(solu.get_job_machine(2))
         
-        solu.reset()
+        greedy = ConstrutiveSolution(ins,solu)
+        greedy.build_naive()
         solu.to_string()
         exit(0) 
      #   s, n = ins.get_S(), ins.get_N()
