@@ -25,8 +25,11 @@ class Instance:
         return self.__N
 
     def get_P(self, i: int) -> int:
-        return self.P[i]
+        return self.__P[i]
 
+    def get_copy_P(self) -> np.array:
+      return self.__P.copy()
+    
     def get_S(self,i : int, j : int) -> np.ndarray:
         if i == j:
             return 0

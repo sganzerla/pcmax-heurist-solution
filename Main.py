@@ -45,7 +45,7 @@ if __name__ == "__main__":
         solu.to_string()
         
         greedy = ConstrutiveSolution(ins,solu)
-        greedy.build_naive()
+        greedy.build_greedy()
         solu.to_string()
         exit(0) 
      #   s, n = ins.get_S(), ins.get_N()
