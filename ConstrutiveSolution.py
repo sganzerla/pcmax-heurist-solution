@@ -43,7 +43,7 @@ class ConstrutiveSolution:
     def __update_S__(self, i: int, j: int, x: int):
         self.__SClone[i][j] = x
 
-    def __build_solution__(self, strategy: Strategy) -> list:
+    def __build_solution__(self, strategy: Strategy) -> np.ndarray:
 
         m = self.__M
         n1 = self.__N
