@@ -28,15 +28,15 @@ class Instance:
         return self.__P[i]
 
     def get_copy_P(self) -> np.array:
-      return self.__P.copy()
-    
-    def get_S(self,i : int, j : int) -> np.ndarray:
+        return self.__P.copy()
+
+    def get_S(self, i: int, j: int) -> np.ndarray:
         if i == j:
             return 0
         if i >= self.__N:
-            return self.__S[self.__N,j]
-       
+            return self.__S[self.__N, j]
+
         if j >= self.__N:
-            return self.__S[i,self.__N]
-             
-        return self.__S[i,j]
+            return self.__S[i, self.__N]
+
+        return self.__S[i, j]

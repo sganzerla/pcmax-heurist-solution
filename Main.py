@@ -4,7 +4,6 @@ from Solution import *
 from ConstrutiveSolution import *
 from optparse import OptionParser
 import os
- 
 
 
 def get_path_files(path):
@@ -18,7 +17,7 @@ def get_path_files(path):
 if __name__ == "__main__":
 
     # path = pasta onde estão as instancias
-    # python.exe .\Main.py -s .\instance_one\ 
+    # python.exe .\Main.py -s .\instance_one\
 
     parser = OptionParser()
     parser.add_option("-s", "--path", dest="path", type="string")
@@ -26,7 +25,7 @@ if __name__ == "__main__":
 
     (opts, _) = parser.parse_args()
 
-    path = opts.path 
+    path = opts.path
 
     # adicionando o path de todas as instâncias
     files = get_path_files(path)
@@ -37,22 +36,15 @@ if __name__ == "__main__":
 
     for file in files:
         print(f"({aux}/{n_files})")
-        
+
         ex = Extract(path + file)
         m, p, s = ex.get_M(), ex.get_P(), ex.get_S()
         ins = Instance(m, p, s)
         solu = Solution(ins)
-        solu.to_string()
-        
-        greedy = ConstrutiveSolution(ins,solu)
-        greedy.build_greedy()
-        solu.to_string()
-        exit(0) 
-     #   s, n = ins.get_S(), ins.get_N()
 
-     #   cons = ConstrutiveSolution(m, n, s, Strategy.NEXT)
-     #   cons.to_string()
-        
-     #   cons = ConstrutiveSolution(m, n, s, Strategy.BEST)
-     #   cons.to_string()
+        greedy = ConstrutiveSolution(ins, solu)
+        greedy.build_naive()
+        solu.to_string()
         aux += 1
+        exit(0)
+
