@@ -41,9 +41,13 @@ if __name__ == "__main__":
         ins = Instance(ex)
         solu = Solution(ins)
 
-        greedy = ConstrutiveSolution(ins, solu)
-        greedy.build_naive()
+        greedy = ConstrutiveSolution(ins)
+        greedy.build_naive(solu)
         solu.to_string()
+        solu.reset()
+        greedy.build_greedy(solu)
+        solu.to_string()
+        
         aux += 1
         exit(0)
 

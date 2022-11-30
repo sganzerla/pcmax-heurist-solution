@@ -56,7 +56,7 @@ class Solution:
                 print(fj, end=" ")
                 fj = self.m[Node.Suc][fj]
             print('\nC : ', self.C[i])
-        print('\nCmax : ', self.Cmax)
+        print('\nCmax : ', self.Cmax,'\n')
 
     def insert_job(self, index_m: int, job: int, pre: int):
         self.C[index_m] += self.inst.get_S(pre, job) - \
