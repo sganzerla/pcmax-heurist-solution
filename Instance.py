@@ -1,12 +1,13 @@
 import numpy as np
+from Extract import *
 
 
 class Instance:
-    def __init__(self, M: int, P: np.array, S: np.ndarray):
-        self.__M = M
-        self.__P = P
-        self.__N = len(P)
-        self.__S = self.__join_times__(S)
+    def __init__(self, extr: Extract):
+        self.__M = extr.get_M()
+        self.__P = extr.get_P()
+        self.__N = len(self.__P)
+        self.__S = self.__join_times__(extr.get_S())
 
     def __join_times__(self, S: np.array) -> np.ndarray:
         n = self.get_N()
@@ -27,7 +28,7 @@ class Instance:
     def get_P(self, i: int) -> int:
         return self.__P[i]
 
-    def get_copy_P(self) -> np.array:
+    def get_copy_P(self) -> np.ndarray:
         return self.__P.copy()
 
     def get_S(self, i: int, j: int) -> np.ndarray:

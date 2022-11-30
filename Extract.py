@@ -35,8 +35,8 @@ class Extract:
         return reduced_border
 
     def __reduce_border__(self, S: np.array) -> np.ndarray:
-        jobs = self.get_N()
-        jm = jobs + self.get_M()
+        jobs = self.__N
+        jm = jobs + self.__M
         # corte da matriz colunas j + 1 até j + m
         S = np.delete(S, slice(jobs + 1, jm), axis=1)
         # corte da matriz linhas j + 1 até j + m
@@ -52,10 +52,7 @@ class Extract:
     def get_M(self) -> int:
         return self.__M
 
-    def get_N(self) -> int:
-        return self.__N
-
-    def get_P(self) -> np.array:
+    def get_P(self) -> np.ndarray:
         return self.__P
 
     def get_S(self) -> np.ndarray:

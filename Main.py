@@ -38,8 +38,7 @@ if __name__ == "__main__":
         print(f"({aux}/{n_files})")
 
         ex = Extract(path + file)
-        m, p, s = ex.get_M(), ex.get_P(), ex.get_S()
-        ins = Instance(m, p, s)
+        ins = Instance(ex)
         solu = Solution(ins)
 
         greedy = ConstrutiveSolution(ins, solu)
