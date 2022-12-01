@@ -29,9 +29,10 @@ class Extract:
         text = ' '.join(str(i) for i in data[2 + jm: len(data) - 2 + jm])
         array = [int(i) for i in text.split() if i.isdigit()]
         multi_array = [array[i::jm] for i in range(jm)]
-
+        # TODO, inverte a matriz, mas poderia ter sido feito na linha de cima diretamente. rever no futuro.
+        multi_array_T = np.array(multi_array).T
         # mantem a matrix com n jobs + 1, removendo redundancias
-        reduced_border = self.__reduce_border__(multi_array)
+        reduced_border = self.__reduce_border__(multi_array_T)
         return reduced_border
 
     def __reduce_border__(self, S: np.array) -> np.ndarray:
