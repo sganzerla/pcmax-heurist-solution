@@ -10,9 +10,12 @@ class Instance:
         self.__S = self.__join_times__(extr.get_S())
 
     def __join_times__(self, S: np.array) -> np.ndarray:
+        # soma o tempo das máquina na última linha mas mantem original o setup da última coluna
         n = self.get_N()
-        for i in range(n):
-            S[i][0:n] = S[i][0:n] + self.__P[i]
+        # cria uma lista de indices da matriz sempre com uma linha a mais que coluna
+        idx = [(i, j) for i in range(n + 1) for j in range(n)]
+        for i, j in idx:
+            S[i][j] = S[i][j] + self.__P[j]
         return S
 
     def to_string(self):
