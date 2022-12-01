@@ -18,7 +18,7 @@ class ConstrutiveSolution:
                 m, jobs[i], solu.get_pre(self.inst.get_N()+m))
 
     def build_greedy(self, solu: Solution):
-        i_jobs = self.inst.get_copy_P().argsort()[::-1]
+        i_jobs = self.inst.get_P_copy().argsort()[::-1]
 
         for i in i_jobs:
             best_delta = sys.maxsize 

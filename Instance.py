@@ -31,7 +31,7 @@ class Instance:
     def get_P(self, i: int) -> int:
         return self.__P[i]
 
-    def get_copy_P(self) -> np.ndarray:
+    def get_P_copy(self) -> np.ndarray:
         return self.__P.copy()
 
     def get_S(self, i: int, j: int) -> np.ndarray:

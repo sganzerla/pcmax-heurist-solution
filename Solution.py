@@ -45,7 +45,7 @@ class Solution:
     def get_job_machine(self, job: int) -> int:
         return self.mj[job]
 
-    def get_index_makespan(self) -> int:
+    def get_idx_makespan(self) -> int:
         return self.i_Cmax
 
     def to_string(self):
@@ -58,16 +58,15 @@ class Solution:
             print('\nC : ', self.C[i])
         print('\nCmax : ', self.Cmax,'\n')
 
-    def insert_job(self, index_m: int, job: int, pre: int):
-        self.C[index_m] += self.inst.get_S(pre, job) - \
-            self.inst.get_S(pre, self.m[1][pre])
-        self.C[index_m] += self.inst.get_S(job, self.m[1][pre])
+    def insert_job(self, idx_m: int, job: int, pre: int):
+        self.C[idx_m] += self.inst.get_S(pre, job) - self.inst.get_S(pre, self.m[Node.Pre][pre])
+        self.C[idx_m] += self.inst.get_S(job, self.m[1][pre])
         suc = self.m[1][pre]
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
 
-        if self.C[index_m] > self.Cmax:
-            self.Cmax = self.C[index_m]
-            self.i_Cmax = index_m
-        self.mj[job] = index_m
+        if self.C[idx_m] > self.Cmax:
+            self.Cmax = self.C[idx_m]
+            self.i_Cmax = idx_m
+        self.mj[job] = idx_m
