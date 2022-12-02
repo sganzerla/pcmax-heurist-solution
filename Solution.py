@@ -125,7 +125,7 @@ class Solution:
         print("02) Verificando distribuição dos jobs.")
         print("------------------------------------")
         jobs = [i for i in range(self.inst.get_N())]
-        print(f"Jobs disponíveis: {[i + i for i in jobs]}")
+        print(f"Jobs disponíveis: {[i + 1 for i in jobs]}")
         print(f"Jobs utilizados: { [i + 1 for i in jobs_used]}")
 
         if set(jobs) == set(jobs_used):
