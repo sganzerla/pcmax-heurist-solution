@@ -49,7 +49,7 @@ if __name__ == "__main__":
         ins.to_string()
         greedy.build_greedy(solu)
         solu.to_string()
-        #solu.check_fact()
+        solu.check_fact()
         aux += 1
         exit(0)
 

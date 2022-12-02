@@ -60,8 +60,8 @@ class Solution:
 
     def insert_job(self, idx_m: int, job: int, pre: int):
         self.C[idx_m] += -self.inst.get_S(pre, self.m[Node.Suc][pre]) + \
-                         self.inst.get_S(pre, job) + \
-                         self.inst.get_S(job, self.m[Node.Suc][pre])
+            self.inst.get_S(pre, job) + \
+            self.inst.get_S(job, self.m[Node.Suc][pre])
         suc = self.m[Node.Suc][pre]
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
@@ -77,7 +77,7 @@ class Solution:
 
         print("------------------------------------")
         print("01) Verificando jobs em cada máquina.")
-        print("------------------------------------")
+        print("------------------------------------\n")
         M = self.inst.get_M()
         J = self.inst.get_N()
         # armazena os indices dos jobs de cada máquina
@@ -113,24 +113,28 @@ class Solution:
             print(f"Total: {total}\n")
 
         cmax = max(machine_time)
-        print(F"\nCMax: {cmax}")
-
+        print("Teste: ")
         if cmax == self.Cmax:
-            print(f"Cmax: {cmax}. OK")
+            print(
+                f"      OK. Valor correto Cmax para a configuração de máquinas x jobs: {cmax}")
         else:
-            print(f"Cmax: {cmax} != {self.Cmax}. Errado")
+            print(
+                f"      Erro. Valor incorreto Cmax para a configuração de máquinas x jobs: {cmax} != {self.Cmax}")
 
         print("")
         print("------------------------------------")
         print("02) Verificando distribuição dos jobs.")
-        print("------------------------------------")
+        print("------------------------------------\n")
         jobs = [i for i in range(J)]
-        print(f"Jobs disponíveis: {[i + 1 for i in jobs]}")
-        print(f"Jobs utilizados: { [i + 1 for i in jobs_used]}")
 
+        print("Teste:")
         if set(jobs) == set(jobs_used):
-            print("Todos os jobs disponíveis foram usados. OK")
+            print(f"    OK. Todos os jobs {len(jobs)} disponíveis foram usados.")
+            print(f"    Jobs disponíveis: {[i + 1 for i in jobs]}")
+            print(f"    Jobs utilizados: { [i + 1 for i in jobs_used]}")
         else:
-            print("Nem todos os jobs foram utilizados. ERRO")
-
+            print("     Erro. Nem todos os jobs foram utilizados na solução.")
+            diff = set(jobs).difference(set(jobs_used))
+            print(f"{[i + 1 for i in diff]}")
+        
         print("")
