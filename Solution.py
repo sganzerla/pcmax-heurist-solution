@@ -76,16 +76,17 @@ class Solution:
 
     def check_fact(self):
 
-        
         print("------------------------------------")
         print("01) Verificando jobs em cada máquina.")
         print("------------------------------------")
+        M = self.inst.get_M()
+        J = self.inst.get_N()
+        # armazena os indices dos jobs de cada máquina
+        machine_idx_jobs = [[] for _ in range(M)]
 
-        machine_idx_jobs = [[] for _ in range(self.inst.get_M())]
-
-        for i in range(self.inst.get_M()):
-            fj = self.m[Node.Suc][self.inst.get_N()+i]
-            while fj < self.inst.get_N():
+        for i in range(M):
+            fj = self.m[Node.Suc][J + i]
+            while fj < J:
                 machine_idx_jobs[i].append(fj)
                 fj = self.m[Node.Suc][fj]
 
@@ -94,7 +95,7 @@ class Solution:
         aux_m = 0
         for machine in machine_idx_jobs:
             aux_m += 1
-            pre = self.inst.get_N()
+            pre = J
             total = 0
             print(f"M{aux_m}: {[i + 1 for i in machine]}")
             itens = len(machine)
@@ -103,7 +104,7 @@ class Solution:
                 jobs_used.append(job)
                 aux_j += 1
                 if aux_j == itens:
-                    job = self.inst.get_N()
+                    job = J
                 suc = job
                 setup_time = self.inst.get_S(pre, suc)
                 total += setup_time
@@ -124,7 +125,7 @@ class Solution:
         print("------------------------------------")
         print("02) Verificando distribuição dos jobs.")
         print("------------------------------------")
-        jobs = [i for i in range(self.inst.get_N())]
+        jobs = [i for i in range(J)]
         print(f"Jobs disponíveis: {[i + 1 for i in jobs]}")
         print(f"Jobs utilizados: { [i + 1 for i in jobs_used]}")
 
@@ -132,5 +133,5 @@ class Solution:
             print("Todos os jobs disponíveis foram usados. OK")
         else:
             print("Nem todos os jobs foram utilizados. ERRO")
-            
+
         print("")
