@@ -42,14 +42,16 @@ if __name__ == "__main__":
         solu = Solution(ins)
 
         greedy = ConstructiveSolution(ins)
-        # greedy.build_naive(solu)
-        # solu.to_string()
-        # solu.reset()
+        #greedy.build_naive(solu)
+        #solu.check_fact()
+        #solu.reset()
         
-        ins.to_string()
+        #ins.to_string()
         greedy.build_greedy(solu)
         solu.to_string()
-        solu.check_fact()
+
+        #solu.check_fact()
+        solu.check_solution()
         aux += 1
         exit(0)
 

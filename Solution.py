@@ -49,6 +49,7 @@ class Solution:
         return self.i_Cmax
 
     def to_string(self):
+        print(self.m + 1,"\n\n\n")
         for i in range(self.inst.get_M()):
             print(f"M{i + 1} : ", end="")
             fj = self.m[Node.Suc][self.inst.get_N()+i]
@@ -66,12 +67,35 @@ class Solution:
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
-
         if self.C[idx_m] > self.Cmax:
             self.Cmax = self.C[idx_m]
             self.i_Cmax = idx_m
-
+        else:
+            self.Cmax = self.C[0];
+            for i in range(1,self.inst.get_M()):
+               if self.C[i] > self.Cmax:
+                  self.Cmax = self.C[i]
+                  self.i_Cmax = i
+                 
         self.mj[job] = idx_m
+
+    def check_solution(self):
+        ok = 1 
+        for m in range(self.inst.get_M()):
+            job = self.inst.get_N()+m
+            cm = self.inst.get_S(job,self.m[Node.Suc][job])
+            job = self.m[Node.Suc][job]
+            if self.mj[job] != m:
+                print(f"Erro de alocado do job {job} : maquina solu {self.mj[job]} maquina correta {m}")
+                ok = 0
+            while job < self.inst.get_N():
+               cm += self.inst.get_S(job,self.m[Node.Suc][job])
+               job = self.m[Node.Suc][job]
+            if cm != self.C[m]:
+               print("Erro no calculo do tempo total da maquina ",m," C solu: ",self.C[m], " C correto: ",cm)         
+               ok = 0
+        if ok :
+            print("Solution ok")        
 
     def check_fact(self):
 
