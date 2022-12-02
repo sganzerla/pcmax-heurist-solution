@@ -1,7 +1,7 @@
 from Instance import *
 from Extract import *
 from Solution import *
-from ConstrutiveSolution import *
+from ConstructiveSolution import *
 from optparse import OptionParser
 import os
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         ins = Instance(ex)
         solu = Solution(ins)
 
-        greedy = ConstrutiveSolution(ins)
+        greedy = ConstructiveSolution(ins)
         greedy.build_naive(solu)
         solu.to_string()
         solu.reset()

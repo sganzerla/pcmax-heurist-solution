@@ -4,7 +4,7 @@ from Instance import *
 import random
 
 
-class ConstrutiveSolution:
+class ConstructiveSolution:
     def __init__(self, inst: Instance):
         self.inst = inst
 
