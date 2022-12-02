@@ -49,7 +49,6 @@ class Solution:
         return self.i_Cmax
 
     def to_string(self):
-        print(self.m + 1,"\n\n\n")
         for i in range(self.inst.get_M()):
             print(f"M{i + 1} : ", end="")
             fj = self.m[Node.Suc][self.inst.get_N()+i]
