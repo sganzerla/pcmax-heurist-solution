@@ -50,18 +50,19 @@ class Solution:
 
     def to_string(self):
         for i in range(self.inst.get_M()):
-            print(f"M{i} : ", end="")
+            print(f"M{i + 1} : ", end="")
             fj = self.m[Node.Suc][self.inst.get_N()+i]
             while fj < self.inst.get_N():
-                print(fj, end=" ")
+                print(fj + 1, end=" ")
                 fj = self.m[Node.Suc][fj]
             print('\nC : ', self.C[i])
         print('\nCmax : ', self.Cmax,'\n')
 
     def insert_job(self, idx_m: int, job: int, pre: int):
         self.C[idx_m] += self.inst.get_S(pre, job) - self.inst.get_S(pre, self.m[Node.Pre][pre])
-        self.C[idx_m] += self.inst.get_S(job, self.m[1][pre])
-        suc = self.m[1][pre]
+        
+        self.C[idx_m] += self.inst.get_S(job, self.m[Node.Suc][pre])
+        suc = self.m[Node.Suc][pre]
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
@@ -69,4 +70,5 @@ class Solution:
         if self.C[idx_m] > self.Cmax:
             self.Cmax = self.C[idx_m]
             self.i_Cmax = idx_m
+            
         self.mj[job] = idx_m
