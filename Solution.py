@@ -59,10 +59,9 @@ class Solution:
         print('\nCmax : ', self.Cmax, '\n')
 
     def insert_job(self, idx_m: int, job: int, pre: int):
-        self.C[idx_m] += self.inst.get_S(pre, job) - \
-            self.inst.get_S(pre, self.m[Node.Pre][pre])
-
-        self.C[idx_m] += self.inst.get_S(job, self.m[Node.Suc][pre])
+        self.C[idx_m] += -self.inst.get_S(pre, self.m[Node.Suc][pre]) + \
+                         self.inst.get_S(pre, job) + \
+                         self.inst.get_S(job, self.m[Node.Suc][pre])
         suc = self.m[Node.Suc][pre]
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
