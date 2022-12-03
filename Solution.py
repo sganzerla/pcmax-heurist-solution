@@ -69,12 +69,14 @@ class Solution:
         if self.C[idx_m] > self.Cmax:
             self.Cmax = self.C[idx_m]
             self.i_Cmax = idx_m
-        else:
-            self.Cmax = self.C[0];
-            for i in range(1,self.inst.get_M()):
-               if self.C[i] > self.Cmax:
-                  self.Cmax = self.C[i]
-                  self.i_Cmax = i
+        
+        # isso gera um resultado incorreto, ver print, resources
+        # else:
+        #     self.Cmax = self.C[0];
+        #     for i in range(1,self.inst.get_M()):
+        #        if self.C[i] > self.Cmax:
+        #           self.Cmax = self.C[i]
+        #           self.i_Cmax = i
                  
         self.mj[job] = idx_m
 
