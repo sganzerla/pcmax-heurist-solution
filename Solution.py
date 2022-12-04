@@ -58,50 +58,53 @@ class Solution:
             print('\nC : ', self.C[i])
         print('\nCmax : ', self.Cmax, '\n')
 
-    def insert_job(self, idx_m: int, job: int, pre: int):
-        self.C[idx_m] += -self.inst.get_S(pre, self.m[Node.Suc][pre]) + \
-            self.inst.get_S(pre, job) + \
-            self.inst.get_S(job, self.m[Node.Suc][pre])
+    def insert_job(self, m: int, job: int, pre: int):
+
         suc = self.m[Node.Suc][pre]
+        # remove arco
+        self.C[m] += -self.inst.get_S(pre, suc)
+
+        # adiciona arco da esquerda
+        self.C[m] += self.inst.get_S(pre, job)
+
+        # adiciona arco da direita
+        self.C[m] += self.inst.get_S(job, suc)
+        
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
-        if self.C[idx_m] > self.Cmax:
-            self.Cmax = self.C[idx_m]
-            self.i_Cmax = idx_m
-        
-        # isso gera um resultado incorreto, ver print, resources
-        # else:
-        #     self.Cmax = self.C[0];
-        #     for i in range(1,self.inst.get_M()):
-        #        if self.C[i] > self.Cmax:
-        #           self.Cmax = self.C[i]
-        #           self.i_Cmax = i
-                 
-        self.mj[job] = idx_m
+
+        # precisa atualizar o valor do CMAX quando for menor ou maior
+        if self.C[m] != self.Cmax:
+            self.i_Cmax = np.argmax(self.C)
+            self.Cmax = max(self.C)
+
+        self.mj[job] = m
 
     def check_solution(self):
-        ok = 1 
+        ok = 1
         for m in range(self.inst.get_M()):
             job = self.inst.get_N()+m
-            cm = self.inst.get_S(job,self.m[Node.Suc][job])
+            cm = self.inst.get_S(job, self.m[Node.Suc][job])
             job = self.m[Node.Suc][job]
             if self.mj[job] != m:
-                print(f"Erro de alocado do job {job} : maquina solu {self.mj[job]} maquina correta {m}")
+                print(
+                    f"Erro de alocado do job {job} : maquina solu {self.mj[job]} maquina correta {m}")
                 ok = 0
             while job < self.inst.get_N():
-               cm += self.inst.get_S(job,self.m[Node.Suc][job])
-               job = self.m[Node.Suc][job]
+                cm += self.inst.get_S(job, self.m[Node.Suc][job])
+                job = self.m[Node.Suc][job]
             if cm != self.C[m]:
-               print("Erro no calculo do tempo total da maquina ",m," C solu: ",self.C[m], " C correto: ",cm)         
-               ok = 0
-        if ok :
-            print("Solution ok")        
+                print("Erro no calculo do tempo total da maquina ",
+                      m, " C solu: ", self.C[m], " C correto: ", cm)
+                ok = 0
+        if ok:
+            print("Solution ok")
 
     def check_fact(self):
 
         print("------------------------------------")
-        print("01) Verificando jobs em cada máquina.")
+        print("01) Somando os tempos de cada job nas máquinas e comparando com CMax.")
         print("------------------------------------\n")
         M = self.inst.get_M()
         J = self.inst.get_N()
@@ -126,19 +129,24 @@ class Solution:
             aux_j = 0
             for job in machine:
                 jobs_used.append(job)
-                aux_j += 1
-                if aux_j == itens:
-                    job = J
+
                 suc = job
                 setup_time = self.inst.get_S(pre, suc)
                 total += setup_time
                 print(f"    ({pre + 1}, {job + 1}): {setup_time}")
                 pre = suc
+                if aux_j == itens - 1:
+                    suc = J
+                    setup_time = self.inst.get_S(pre, suc)
+                    total += setup_time
+                    print(f"    ({pre + 1}, {suc + 1}): {setup_time}")
+
+                aux_j += 1
             machine_time.append(total)
             print(f"Total: {total}\n")
 
         cmax = max(machine_time)
-        print("Teste: ")
+        print("Resultado: ")
         if cmax == self.Cmax:
             print(
                 f"      OK. Valor correto Cmax para a configuração de máquinas x jobs: {cmax}")
@@ -148,18 +156,19 @@ class Solution:
 
         print("")
         print("------------------------------------")
-        print("02) Verificando distribuição dos jobs.")
+        print("02) Verificando se todos os jobs foram utilizados nas máquinas.")
         print("------------------------------------\n")
         jobs = [i for i in range(J)]
 
-        print("Teste:")
+        print(f"Jobs disponíveis: {[i + 1 for i in jobs]}")
+        print(f"Jobs utilizados: { [i + 1 for i in jobs_used]}\n")
+        print("Resultado:")
         if set(jobs) == set(jobs_used):
-            print(f"    OK. Todos os jobs {len(jobs)} disponíveis foram usados.")
-            print(f"    Jobs disponíveis: {[i + 1 for i in jobs]}")
-            print(f"    Jobs utilizados: { [i + 1 for i in jobs_used]}")
+            print(
+                f"    OK. Todos os jobs {len(jobs)} disponíveis foram usados.")
         else:
             print("     Erro. Nem todos os jobs foram utilizados na solução.")
             diff = set(jobs).difference(set(jobs_used))
             print(f"{[i + 1 for i in diff]}")
-        
+
         print("")

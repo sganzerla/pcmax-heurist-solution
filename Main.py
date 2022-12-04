@@ -48,12 +48,12 @@ if __name__ == "__main__":
         # solu.check_solution()
         # solu.reset()
         
-        ins.to_string()
+        # ins.to_string()
         greedy.build_greedy(solu)
         solu.to_string()
 
         solu.check_fact()
-        solu.check_solution()
+        # solu.check_solution()
         aux += 1
         exit(0)
 
