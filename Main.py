@@ -2,6 +2,7 @@ from Instance import *
 from Extract import *
 from Solution import *
 from ConstructiveSolution import *
+from LocalSearchSolution import *
 from optparse import OptionParser
 import os
 
@@ -38,22 +39,26 @@ if __name__ == "__main__":
         print(f"({aux}/{n_files})")
 
         ex = Extract(path + file)
-        ins = Instance(ex)
-        solu = Solution(ins)
+        inst = Instance(ex)
+        solu = Solution(inst)
 
-        greedy = ConstructiveSolution(ins)
+        greedy = ConstructiveSolution(inst)
         # greedy.build_naive(solu)
         # solu.to_string()
         # solu.check_fact()
         # solu.check_solution()
         # solu.reset()
         
-        # ins.to_string()
+        # inst.to_string()
         greedy.build_greedy(solu)
-        solu.to_string()
+        # solu.to_string()
 
-        solu.check_fact()
+        # solu.check_fact()
         # solu.check_solution()
+        
+        
+        local = LocalSearchSolution(inst)
+        local.build_2_opt()
         aux += 1
         exit(0)
 
