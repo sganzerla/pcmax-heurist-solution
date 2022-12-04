@@ -11,30 +11,30 @@ class Node(IntEnum):
 class Solution:
     def __init__(self, inst: Instance):
         self.inst = inst
-        self.mj = -np.ones(inst.get_N(), dtype=int)
-        self.m = -np.ones((2, inst.get_N()+inst.get_M()), dtype=int)
-        for i in range(0, inst.get_M()):
-            self.m[Node.Pre][inst.get_N()+i] = inst.get_N()+i
-            self.m[Node.Suc][inst.get_N()+i] = inst.get_N()+i
-        self.Cmax = 0
-        self.i_Cmax = -1
-        self.C = np.zeros(inst.get_M(), dtype=int)
+        self.mj = -np.ones(inst.get_n(), dtype=int)
+        self.m = -np.ones((2, inst.get_n() + inst.get_m()), dtype=int)
+        for i in range(0, inst.get_m()):
+            self.m[Node.Pre][inst.get_n() + i] = inst.get_n() + i
+            self.m[Node.Suc][inst.get_n() + i] = inst.get_n() + i
+        self.cmax = 0
+        self.cmax_idx = -1
+        self.c = np.zeros(inst.get_m(), dtype=int)
 
     def reset(self):
-        self.mj = -np.ones(self.inst.get_N(), dtype=int)
-        self.m = -np.ones((2, self.inst.get_N()+self.inst.get_M()), dtype=int)
-        for i in range(0, self.inst.get_M()):
-            self.m[Node.Pre][self.inst.get_N() + i] = self.inst.get_N() + i
-            self.m[Node.Suc][self.inst.get_N() + i] = self.inst.get_N() + i
-        self.Cmax = 0
-        self.i_Cmax = -1
-        self.C = np.zeros(self.inst.get_M(), dtype=int)
+        self.mj = -np.ones(self.inst.get_n(), dtype=int)
+        self.m = -np.ones((2, self.inst.get_n() + self.inst.get_m()), dtype=int)
+        for i in range(0, self.inst.get_m()):
+            self.m[Node.Pre][self.inst.get_n() + i] = self.inst.get_n() + i
+            self.m[Node.Suc][self.inst.get_n() + i] = self.inst.get_n() + i
+        self.cmax = 0
+        self.cmax_idx = -1
+        self.c = np.zeros(self.inst.get_m(), dtype=int)
 
     def get_makespan(self) -> int:
-        return self.Cmax
+        return self.cmax
 
-    def get_C(self, m: int) -> int:
-        return self.C[m]
+    def get_c(self, m: int) -> int:
+        return self.c[m]
 
     def get_suc(self, job: int) -> int:
         return self.m[Node.Suc][job]
@@ -45,58 +45,58 @@ class Solution:
     def get_job_machine(self, job: int) -> int:
         return self.mj[job]
 
-    def get_idx_makespan(self) -> int:
-        return self.i_Cmax
+    def get_makespan_idx(self) -> int:
+        return self.cmax_idx
 
     def to_string(self):
-        for i in range(self.inst.get_M()):
+        for i in range(self.inst.get_m()):
             print(f"M{i + 1} : ", end="")
-            fj = self.m[Node.Suc][self.inst.get_N()+i]
-            while fj < self.inst.get_N():
+            fj = self.m[Node.Suc][self.inst.get_n() + i]
+            while fj < self.inst.get_n():
                 print(fj + 1, end=" ")
                 fj = self.m[Node.Suc][fj]
-            print('\nC : ', self.C[i])
-        print('\nCmax : ', self.Cmax, '\n')
+            print('\nC : ', self.c[i])
+        print('\nCmax : ', self.cmax, '\n')
 
     def insert_job(self, m: int, job: int, pre: int):
 
         suc = self.m[Node.Suc][pre]
         # remove arco
-        self.C[m] += -self.inst.get_S(pre, suc)
+        self.c[m] += -self.inst.get_s(pre, suc)
 
-        # adiciona arco da esquerda
-        self.C[m] += self.inst.get_S(pre, job)
+        # add arco da esq
+        self.c[m] += self.inst.get_s(pre, job)
 
-        # adiciona arco da direita
-        self.C[m] += self.inst.get_S(job, suc)
+        # add arco da dir
+        self.c[m] += self.inst.get_s(job, suc)
         
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
 
-        # precisa atualizar o valor do CMAX quando for menor ou maior
-        if self.C[m] != self.Cmax:
-            self.i_Cmax = np.argmax(self.C)
-            self.Cmax = max(self.C)
+        # check CMAX
+        if self.c[m] != self.cmax:
+            self.cmax_idx = np.argmax(self.c)
+            self.cmax = max(self.c)
 
         self.mj[job] = m
 
     def check_solution(self):
         ok = 1
-        for m in range(self.inst.get_M()):
-            job = self.inst.get_N()+m
-            cm = self.inst.get_S(job, self.m[Node.Suc][job])
+        for m in range(self.inst.get_m()):
+            job = self.inst.get_n() + m
+            cm = self.inst.get_s(job, self.m[Node.Suc][job])
             job = self.m[Node.Suc][job]
             if self.mj[job] != m:
                 print(
                     f"Erro de alocado do job {job} : maquina solu {self.mj[job]} maquina correta {m}")
                 ok = 0
-            while job < self.inst.get_N():
-                cm += self.inst.get_S(job, self.m[Node.Suc][job])
+            while job < self.inst.get_n():
+                cm += self.inst.get_s(job, self.m[Node.Suc][job])
                 job = self.m[Node.Suc][job]
-            if cm != self.C[m]:
+            if cm != self.c[m]:
                 print("Erro no calculo do tempo total da maquina ",
-                      m, " C solu: ", self.C[m], " C correto: ", cm)
+                      m, " C solu: ", self.c[m], " C correto: ", cm)
                 ok = 0
         if ok:
             print("Solution ok")
@@ -104,16 +104,16 @@ class Solution:
     def check_fact(self):
 
         print("------------------------------------")
-        print("01) Somando os tempos de cada job nas máquinas e comparando com CMax.")
+        print("01) Soma tempos job até CMax.")
         print("------------------------------------\n")
-        M = self.inst.get_M()
-        J = self.inst.get_N()
-        # armazena os indices dos jobs de cada máquina
-        machine_idx_jobs = [[] for _ in range(M)]
+        m = self.inst.get_m()
+        n = self.inst.get_n()
+        # add idx jobs para maq
+        machine_idx_jobs = [[] for _ in range(m)]
 
-        for i in range(M):
-            fj = self.m[Node.Suc][J + i]
-            while fj < J:
+        for i in range(m):
+            fj = self.m[Node.Suc][n + i]
+            while fj < n:
                 machine_idx_jobs[i].append(fj)
                 fj = self.m[Node.Suc][fj]
 
@@ -122,7 +122,7 @@ class Solution:
         aux_m = 0
         for machine in machine_idx_jobs:
             aux_m += 1
-            pre = J
+            pre = n
             total = 0
             print(f"M{aux_m}: {[i + 1 for i in machine]}")
             itens = len(machine)
@@ -131,13 +131,13 @@ class Solution:
                 jobs_used.append(job)
 
                 suc = job
-                setup_time = self.inst.get_S(pre, suc)
+                setup_time = self.inst.get_s(pre, suc)
                 total += setup_time
                 print(f"    ({pre + 1}, {job + 1}): {setup_time}")
                 pre = suc
                 if aux_j == itens - 1:
-                    suc = J
-                    setup_time = self.inst.get_S(pre, suc)
+                    suc = n
+                    setup_time = self.inst.get_s(pre, suc)
                     total += setup_time
                     print(f"    ({pre + 1}, {suc + 1}): {setup_time}")
 
@@ -147,18 +147,18 @@ class Solution:
 
         cmax = max(machine_time)
         print("Resultado: ")
-        if cmax == self.Cmax:
+        if cmax == self.cmax:
             print(
                 f"      OK. Valor correto Cmax para a configuração de máquinas x jobs: {cmax}")
         else:
             print(
-                f"      Erro. Valor incorreto Cmax para a configuração de máquinas x jobs: {cmax} != {self.Cmax}")
+                f"      Erro. Valor incorreto Cmax para a configuração de máquinas x jobs: {cmax} != {self.cmax}")
 
         print("")
         print("------------------------------------")
         print("02) Verificando se todos os jobs foram utilizados nas máquinas.")
         print("------------------------------------\n")
-        jobs = [i for i in range(J)]
+        jobs = [i for i in range(n)]
 
         print(f"Jobs disponíveis: {[i + 1 for i in jobs]}")
         print(f"Jobs utilizados: { [i + 1 for i in jobs_used]}\n")

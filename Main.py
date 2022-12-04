@@ -1,23 +1,19 @@
-from Instance import *
-from Extract import *
-from Solution import *
-from ConstructiveSolution import *
-from LocalSearchSolution import *
-from optparse import OptionParser
 import os
+from optparse import OptionParser
+
+from ConstructiveSolution import *
 
 
-def get_path_files(path):
-    files = []
-    for (_, _, file) in os.walk(path):
-        for f in file:
-            files.append(f)
-    return files
+def get_path_files(path_root: str):
+    path_files = []
+    for (_, _, path_file) in os.walk(path_root):
+        for f in path_file:
+            path_files.append(f)
+    return path_files
 
 
 if __name__ == "__main__":
 
-    # path = pasta onde estão as instancias
     # python.exe .\Main.py -s .\instance_one\
 
     parser = OptionParser()
@@ -28,10 +24,10 @@ if __name__ == "__main__":
 
     path = opts.path
 
-    # adicionando o path de todas as instâncias
+    # add path root com inst
     files = get_path_files(path)
 
-    # barra de progresso
+    # barra de progress
     n_files = len(files)
     aux = 1
 
@@ -51,14 +47,12 @@ if __name__ == "__main__":
         
         # inst.to_string()
         greedy.build_greedy(solu)
-        # solu.to_string()
+        solu.to_string()
 
-        # solu.check_fact()
+        solu.check_fact()
         # solu.check_solution()
         
         
-        local = LocalSearchSolution(inst)
-        local.build_2_opt()
         aux += 1
         exit(0)
 
