@@ -77,7 +77,7 @@ class Solution:
         # check CMAX
         if self.c[m] != self.cmax:
             self.cmax_idx = np.argmax(self.c)
-            self.cmax = max(self.c)
+            self.cmax = self.c[self.cmax_idx]
 
         self.mj[job] = m
 
