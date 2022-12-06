@@ -68,7 +68,9 @@ class Solution:
         self.c[m] += self.inst.get_s(pre, job)
         # add arco da dir
         self.c[m] += self.inst.get_s(job, suc)
+        
         self.m[Node.Suc][pre] = job
+        # TODO investigar 
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
         # check CMAX
@@ -77,27 +79,47 @@ class Solution:
             self.cmax = self.c[self.cmax_idx]
         self.mj[job] = m
 
-    def new_cost_2opt(self, ja: int, jb: int):
+    def swap_2opt(self, ja: int, jb: int):
+        
+        # continuar
+        print(self.m)
+        ja_pre = self.m[Node.Pre][ja]
+        ja_suc = self.m[Node.Suc][ja]
 
-        j1pre = self.m[Node.Pre][ja]
-        j1suc = self.m[Node.Suc][ja]
+        jb_pre = self.m[Node.Pre][jb]
+        jb_suc = self.m[Node.Suc][jb]
 
-        j2pre = self.m[Node.Pre][jb]
-        j2suc = self.m[Node.Suc][jb]
+        
+        
+        # self.m[Node.Suc][pre] = job
+        # self.m[Node.Pre][job] = pre
+        # self.m[Node.Suc][job] = suc
+        
+        
+        
+        return 0
+
+    def new_cost_2opt(self, ja: int, jb: int) -> int:
+
+        ja_pre = self.m[Node.Pre][ja]
+        ja_suc = self.m[Node.Suc][ja]
+
+        jb_pre = self.m[Node.Pre][jb]
+        jb_suc = self.m[Node.Suc][jb]
 
         if (ja == jb):
             return 0
-        
+
         # remove arcos pre e suc do job
-        c1 = - (self.inst.get_s(j1pre, ja) + self.inst.get_s(ja, j1suc))
-        c2 = - (self.inst.get_s(j2pre, jb) + self.inst.get_s(jb, j2suc))
-        
+        c1 = - (self.inst.get_s(ja_pre, ja) + self.inst.get_s(ja, ja_suc))
+        c2 = - (self.inst.get_s(jb_pre, jb) + self.inst.get_s(jb, jb_suc))
+
         # adiciona os arcos trocados
-        c1 += self.inst.get_s(j1pre, jb) + self.inst.get_s(jb, j1suc)
-        c2 += self.inst.get_s(j2pre, ja) + self.inst.get_s(ja, j2suc)
-        
+        c1 += self.inst.get_s(ja_pre, jb) + self.inst.get_s(jb, ja_suc)
+        c2 += self.inst.get_s(jb_pre, ja) + self.inst.get_s(ja, jb_suc)
+
         # se soma dos custos < 0 é porque a mudança reduzirá o CMAX
-        return c1 + c2
+        return [c1, c2]
 
     def check_solution(self):
         ok = 1
