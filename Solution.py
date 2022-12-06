@@ -22,7 +22,8 @@ class Solution:
 
     def reset(self):
         self.mj = -np.ones(self.inst.get_n(), dtype=int)
-        self.m = -np.ones((2, self.inst.get_n() + self.inst.get_m()), dtype=int)
+        self.m = -np.ones((2, self.inst.get_n() +
+                          self.inst.get_m()), dtype=int)
         for i in range(0, self.inst.get_m()):
             self.m[Node.Pre][self.inst.get_n() + i] = self.inst.get_n() + i
             self.m[Node.Suc][self.inst.get_n() + i] = self.inst.get_n() + i
@@ -63,23 +64,40 @@ class Solution:
         suc = self.m[Node.Suc][pre]
         # remove arco
         self.c[m] += -self.inst.get_s(pre, suc)
-
         # add arco da esq
         self.c[m] += self.inst.get_s(pre, job)
-
         # add arco da dir
         self.c[m] += self.inst.get_s(job, suc)
-        
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
-
         # check CMAX
         if self.c[m] != self.cmax:
             self.cmax_idx = np.argmax(self.c)
             self.cmax = self.c[self.cmax_idx]
-
         self.mj[job] = m
+
+    def new_cost_2opt(self, ja: int, jb: int):
+
+        j1pre = self.m[Node.Pre][ja]
+        j1suc = self.m[Node.Suc][ja]
+
+        j2pre = self.m[Node.Pre][jb]
+        j2suc = self.m[Node.Suc][jb]
+
+        if (ja == jb):
+            return 0
+        
+        # remove arcos pre e suc do job
+        c1 = - (self.inst.get_s(j1pre, ja) + self.inst.get_s(ja, j1suc))
+        c2 = - (self.inst.get_s(j2pre, jb) + self.inst.get_s(jb, j2suc))
+        
+        # adiciona os arcos trocados
+        c1 += self.inst.get_s(j1pre, jb) + self.inst.get_s(jb, j1suc)
+        c2 += self.inst.get_s(j2pre, ja) + self.inst.get_s(ja, j2suc)
+        
+        # se soma dos custos < 0 é porque a mudança reduzirá o CMAX
+        return c1 + c2
 
     def check_solution(self):
         ok = 1
