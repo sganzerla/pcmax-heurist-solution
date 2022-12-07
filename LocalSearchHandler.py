@@ -22,7 +22,7 @@ class LocalSearchHandler:
                 best_cost = current_cost
                 best_change = [i, j]
 
-        if len(best_change) == 2:
+        if best_cost < 0:
             sol.swap_2opt(best_change[0], best_change[1])
             print("best change: ", best_change,
                   "reduzindo o custo ", best_cost)
