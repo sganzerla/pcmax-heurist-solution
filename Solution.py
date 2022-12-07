@@ -69,37 +69,40 @@ class Solution:
         # add arco da dir
         self.c[m] += self.inst.get_s(job, suc)
 
-
-        # self.m[Node.Suc][pre] = job
-        # self.m[Node.Pre][job] = pre
-        # self.m[Node.Suc][job] = suc
-        
         self.m[Node.Suc][job] = suc
         self.m[Node.Suc][pre] = job
-        self.m[Node.Pre][job] = job
+        self.m[Node.Pre][suc] = job
+        self.m[Node.Pre][job] = pre
 
         # check CMAX
         if self.c[m] != self.cmax:
             self.cmax_idx = np.argmax(self.c)
             self.cmax = self.c[self.cmax_idx]
         self.mj[job] = m
-        print(self.m)
 
     def swap_2opt(self, ja: int, jb: int):
 
         # continuar
-        print(self.m)
         ja_pre = self.m[Node.Pre][ja]
         ja_suc = self.m[Node.Suc][ja]
 
         jb_pre = self.m[Node.Pre][jb]
         jb_suc = self.m[Node.Suc][jb]
+        
+        print(self.m)
+        self.m[Node.Suc][ja_pre] = jb
+        self.m[Node.Suc][jb_pre] = ja
+        
+        self.m[Node.Pre][ja_suc] = jb
+        self.m[Node.Pre][jb_suc] = ja
+        
+        print(self.m)
+        
+        # TODO atualizar tempo C
 
-        # self.m[Node.Suc][pre] = job
-        # self.m[Node.Pre][job] = pre
-        # self.m[Node.Suc][job] = suc
+        self.cmax_idx = np.argmax(self.c)
+        self.cmax = self.c[self.cmax_idx]
 
-        return 0
 
     def new_cost_2opt(self, ja: int, jb: int) -> int:
 
