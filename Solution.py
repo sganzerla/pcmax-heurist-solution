@@ -16,9 +16,10 @@ class Solution:
         for i in range(0, inst.get_m()):
             self.m[Node.Pre][inst.get_n() + i] = inst.get_n() + i
             self.m[Node.Suc][inst.get_n() + i] = inst.get_n() + i
+        self.c = np.zeros(inst.get_m(), dtype=int)
+        self.n = np.zeros(inst.get_m(), dtype=int)  # armazena o numero de jobs em cada maquina
         self.cmax = 0
         self.cmax_idx = -1
-        self.c = np.zeros(inst.get_m(), dtype=int)
 
     def reset(self):
         self.mj = -np.ones(self.inst.get_n(), dtype=int)
@@ -27,9 +28,10 @@ class Solution:
         for i in range(0, self.inst.get_m()):
             self.m[Node.Pre][self.inst.get_n() + i] = self.inst.get_n() + i
             self.m[Node.Suc][self.inst.get_n() + i] = self.inst.get_n() + i
+        self.c = np.zeros(self.inst.get_m(), dtype=int)
+        self.n = np.zeros(self.inst.get_m(), dtype=int)
         self.cmax = 0
         self.cmax_idx = -1
-        self.c = np.zeros(self.inst.get_m(), dtype=int)
 
     def get_makespan(self) -> int:
         return self.cmax
@@ -43,6 +45,9 @@ class Solution:
     def get_pre(self, job: int) -> int:
         return self.m[Node.Pre][job]
 
+    def get_num_jobs_machine(self, machine: int) -> int:
+        return self.n[machine]
+    
     def get_job_machine(self, job: int) -> int:
         return self.mj[job]
 
@@ -69,16 +74,17 @@ class Solution:
         # add arco da dir
         self.c[m] += self.inst.get_s(job, suc)
 
+        self.m[Node.Pre][job] = pre
         self.m[Node.Suc][job] = suc
         self.m[Node.Suc][pre] = job
         self.m[Node.Pre][suc] = job
-        self.m[Node.Pre][job] = pre
 
         # check CMAX
         if self.c[m] != self.cmax:
             self.cmax_idx = np.argmax(self.c)
             self.cmax = self.c[self.cmax_idx]
         self.mj[job] = m
+        self.n[m] += 1
 
     def remove_job(self, m: int, job: int):
         
@@ -102,6 +108,7 @@ class Solution:
             self.cmax_idx = np.argmax(self.c)
             self.cmax = self.c[self.cmax_idx]
         self.mj[job] = -1 
+        self.n[m] -= 1 
 
 
     def check_solution(self):
