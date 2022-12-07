@@ -60,7 +60,7 @@ class Solution:
         print('\nCmax : ', self.cmax, '\n')
 
     def insert_job(self, m: int, job: int, pre: int):
-
+    
         suc = self.m[Node.Suc][pre]
         # remove arco
         self.c[m] += -self.inst.get_s(pre, suc)
@@ -80,51 +80,29 @@ class Solution:
             self.cmax = self.c[self.cmax_idx]
         self.mj[job] = m
 
-    def swap_2opt(self, ja: int, jb: int):
-
-        # continuar
-        ja_pre = self.m[Node.Pre][ja]
-        ja_suc = self.m[Node.Suc][ja]
-
-        jb_pre = self.m[Node.Pre][jb]
-        jb_suc = self.m[Node.Suc][jb]
+    def remove_job(self, m: int, job: int):
         
-        print(self.m)
-        self.m[Node.Suc][ja_pre] = jb
-        self.m[Node.Suc][jb_pre] = ja
+        suc = self.m[Node.Suc][job]
+        pre = self.m[Node.Pre][job]
+
+        # remove arco da esq
+        self.c[m] -= self.inst.get_s(pre, job)
+        # remove arco da dir
+        self.c[m] -= self.inst.get_s(job, suc)
+        # add arco
+        self.c[m] += self.inst.get_s(pre, suc)
         
-        self.m[Node.Pre][ja_suc] = jb
-        self.m[Node.Pre][jb_suc] = ja
-        
-        print(self.m)
-        
-        # TODO atualizar tempo C
+        self.m[Node.Suc][job] = -1 
+        self.m[Node.Pre][job] = -1
+        self.m[Node.Suc][pre] = suc 
+        self.m[Node.Pre][suc] = pre
 
-        self.cmax_idx = np.argmax(self.c)
-        self.cmax = self.c[self.cmax_idx]
+        # check CMAX
+        if self.c[m] != self.cmax:
+            self.cmax_idx = np.argmax(self.c)
+            self.cmax = self.c[self.cmax_idx]
+        self.mj[job] = -1 
 
-
-    def new_cost_2opt(self, ja: int, jb: int) -> int:
-
-        if (ja == jb):
-            return 0
-
-        ja_pre = self.m[Node.Pre][ja]
-        ja_suc = self.m[Node.Suc][ja]
-
-        jb_pre = self.m[Node.Pre][jb]
-        jb_suc = self.m[Node.Suc][jb]
-
-        # remove arcos pre e suc do job
-        c1 = - (self.inst.get_s(ja_pre, ja) + self.inst.get_s(ja, ja_suc))
-        c2 = - (self.inst.get_s(jb_pre, jb) + self.inst.get_s(jb, jb_suc))
-
-        # adiciona os arcos trocados
-        c1 += self.inst.get_s(ja_pre, jb) + self.inst.get_s(jb, ja_suc)
-        c2 += self.inst.get_s(jb_pre, ja) + self.inst.get_s(ja, jb_suc)
-
-        # se soma dos custos < 0 é porque a mudança reduzirá o CMAX
-        return c1 + c2
 
     def check_solution(self):
         ok = 1

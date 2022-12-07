@@ -2,7 +2,7 @@ import os
 from optparse import OptionParser
 
 from ConstructiveSolution import *
-from LocalSearchHandler import *
+from Insertion import *
 
 
 def get_path_files(path_root: str):
@@ -40,6 +40,7 @@ if __name__ == "__main__":
         solu = Solution(inst)
 
         greedy = ConstructiveSolution(inst)
+        insert = Insertion(inst)
         # greedy.build_naive(solu)
         # solu.to_string()
         # solu.check_fact()
@@ -49,16 +50,10 @@ if __name__ == "__main__":
         # inst.to_string()
         greedy.build_greedy(solu)
         solu.to_string()
-
-        # solu.check_solution()
-        
-        local = LocalSearchHandler(inst)
-        local.build_2opt(solu)
-        
-        
+        solu.check_solution()
+        insert.search(solu)        
         solu.to_string()
-        solu.check_fact()
-        
+        solu.check_solution() 
         aux += 1
         exit(0)
 
