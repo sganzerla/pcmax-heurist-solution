@@ -26,24 +26,17 @@ if __name__ == "__main__":
 
     greedy = ConstructiveSolution(inst)
     ls = LocalSearch(inst)
-    # greedy.build_naive(solu)
-    # solu.to_string()
-    # solu.check_fact()
-    # solu.check_solution()
-    # solu.reset()
-    
-    # inst.to_string()
+    #greedy.build_naive(solu)
     greedy.build_greedy(solu)
     solu.to_string()
     solu.check_solution()
-    print("================ Swap      =============") 
-    ls.swap(solu)        
-    solu.to_string()
-    solu.check_solution() 
     print("================ Insertion =============") 
     ls.insertion(solu)        
     solu.to_string()
     solu.check_solution() 
-    
-    exit(0)
+    print("================ Swap      =============") 
+    ls.swap(solu)        
+    solu.to_string()
+    solu.check_solution() 
+  
 
