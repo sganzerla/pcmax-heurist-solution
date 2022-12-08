@@ -7,7 +7,7 @@ class LocalSearch:
         self.inst = inst
 
 
-    def insertion(self,solu : Solution):
+    def insertion(self, solu : Solution):
       
        while True: 
           best_delta = 0
@@ -51,16 +51,13 @@ class LocalSearch:
 
                    jobi = solu.get_suc(jobi)         
           
-          print(best_delta)
-          print(best_mov)
           if best_delta == 0:
              break
 
           solu.ejeta_job(best_mov[0],best_mov[1])
           solu.insert_job(best_mov[2],best_mov[1],best_mov[3])
             
-    def swap(self,solu : Solution):
-          
+    def swap(self, solu : Solution):
        while True: 
           best_delta = 0
           best_mov = [] 
@@ -101,8 +98,6 @@ class LocalSearch:
 
                    jobi = solu.get_suc(jobi)         
           
-          print(best_delta)
-          print(best_mov)
           if best_delta == 0:
              break
 
@@ -114,3 +109,60 @@ class LocalSearch:
           solu.insert_job(best_mov[2], best_mov[1], prej)
          
                 
+    def opt3(self, solu : Solution, m : int)-> bool: 
+        if solu.get_num_jobs_machine(m) < 3:
+           print("3 opt nao pode ser aplicado por numero insuficientes de tarefas")    
+           return False
+        
+        ok = False
+        
+        while True:
+            job1 = self.inst.get_n() + m 
+            job2 = solu.get_suc(job1) 
+            job3 = solu.get_suc(job2) 
+            
+            best_delta = 0
+            best_move = []
+            for i in range(solu.get_num_jobs_machine(m)-3):
+                  for j in range(1,solu.get_num_jobs_machine(m)-2):
+                     for k in range(2,solu.get_num_jobs_machine(m)-1):
+                        delta = -self.inst.get_s(solu.get_pre(job1),job1)
+                        delta -= self.inst.get_s(solu.get_pre(job2),job2)
+                        delta -= self.inst.get_s(solu.get_pre(job3),job3)
+                        
+                        delta += self.inst.get_s(solu.get_pre(job1),job2)
+                        delta += self.inst.get_s(solu.get_pre(job2),job3)
+                        delta += self.inst.get_s(solu.get_pre(job3),job1)
+                                 
+                        
+                        if delta < best_delta:
+                           best_delta = delta
+                           best_move = [job1, job2, job3] 
+                           
+                           job3 = solu.get_suc(job3)
+                     
+                     job2 = solu.get_suc(job2)
+                     job3 = solu.get_suc(job2)
+                           
+                  job1 = solu.get_suc(job1)
+                  job2 = solu.get_suc(job1)
+                  job3 = solu.get_suc(job2)
+            
+            if best_delta < 0:
+                     pre1 = solu.get_pre(best_move[0])
+                     pre2 = solu.get_pre(best_move[1])
+                     pre3 = solu.get_pre(best_move[2])
+                     
+                     solu.cut(best_move[0])
+                     solu.cut(best_move[1])
+                     solu.cut(best_move[2])
+                     
+                     solu.patch(pre1, best_move[1])
+                     solu.patch(pre2, best_move[2])
+                     solu.patch(pre3, best_move[0])
+                     
+                     ok = True
+            else:
+               break 
+         
+        return ok          

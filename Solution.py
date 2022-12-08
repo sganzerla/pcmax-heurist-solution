@@ -11,7 +11,7 @@ class Node(IntEnum):
 class Solution:
     def __init__(self, inst: Instance):
         self.inst = inst
-        self.mj = -np.ones(inst.get_n(), dtype=int)
+        self.mj = -np.ones(inst.get_n() + inst.get_m(), dtype=int)
         self.m = -np.ones((2, inst.get_n() + inst.get_m()), dtype=int)
         for i in range(0, inst.get_m()):
             self.m[Node.Pre][inst.get_n() + i] = inst.get_n() + i
@@ -20,9 +20,12 @@ class Solution:
         self.n = np.zeros(inst.get_m(), dtype=int)  # armazena o numero de jobs em cada maquina
         self.cmax = 0
         self.cmax_idx = -1
-
+        
+        for i in range(self.inst.get_m()):
+           self.mj[self.inst.get_n()+i] = i
+   
     def reset(self):
-        self.mj = -np.ones(self.inst.get_n(), dtype=int)
+        self.mj = -np.ones(self.inst.get_n() + self.inst.get_m(), dtype=int)
         self.m = -np.ones((2, self.inst.get_n() +
                           self.inst.get_m()), dtype=int)
         for i in range(0, self.inst.get_m()):
@@ -32,6 +35,9 @@ class Solution:
         self.n = np.zeros(self.inst.get_m(), dtype=int)
         self.cmax = 0
         self.cmax_idx = -1
+        
+        for i in range(self.inst.get_m()):
+               self.mj[self.inst.get_n()+i] = i
 
     def get_makespan(self) -> int:
         return self.cmax
@@ -64,6 +70,39 @@ class Solution:
             print('\nC : ', self.c[i])
         print('\nCmax : ', self.cmax, '\n')
 
+    
+    def cut(self,job: int): # corta a arco entre o job e o seu antecessor
+        pre = self.m[Node.Pre][job]
+        m = self.get_job_machine(job)
+
+        # remove arco da esq
+        self.c[m] -= self.inst.get_s(pre, job)
+        
+        self.m[Node.Pre][job] = -1
+        self.m[Node.Suc][pre] = -1 
+
+        # check CMAX
+        if self.c[m] != self.cmax:
+            self.cmax_idx = np.argmax(self.c)
+            self.cmax = self.c[self.cmax_idx]
+       
+    def patch(self,pre: int, suc: int): # corta a arco entre o job e o seu antecessoir
+        if self.get_job_machine(pre) != self.get_job_machine(suc):
+            print("erro, as tarefas devem ser da mesma maquina")
+            return
+
+        # remove arco da esq
+        m = self.get_job_machine(pre)
+        self.c[m] += self.inst.get_s(pre, suc)
+        
+        self.m[Node.Pre][suc] =  pre
+        self.m[Node.Suc][pre] =  suc 
+
+        # check CMAX
+        if self.c[m] != self.cmax:
+            self.cmax_idx = np.argmax(self.c)
+            self.cmax = self.c[self.cmax_idx]
+        
     def insert_job(self, m: int, job: int, pre: int):
     
         suc = self.m[Node.Suc][pre]
