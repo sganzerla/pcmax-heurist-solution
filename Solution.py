@@ -86,7 +86,7 @@ class Solution:
         self.mj[job] = m
         self.n[m] += 1
 
-    def remove_job(self, m: int, job: int):
+    def ejeta_job(self, m: int, job: int):
         
         suc = self.m[Node.Suc][job]
         pre = self.m[Node.Pre][job]
