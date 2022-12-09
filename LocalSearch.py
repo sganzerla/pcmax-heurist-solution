@@ -109,9 +109,9 @@ class LocalSearch:
             solu.insert_job(best_mov[0], best_mov[3], prei)
             solu.insert_job(best_mov[2], best_mov[1], prej)
 
-    def opt3(self, solu: Solution, m: int) -> bool:
+    def gen_insert(self, solu: Solution, m: int) -> bool:
         if solu.get_num_jobs_machine(m) < 3:
-            print("3 opt nao pode ser aplicado por numero insuficientes de tarefas")
+            print("insercao generalizada nao pode ser aplicada, nr insuficientes de tarefas: 3")
             return False
 
         ok = False
@@ -123,9 +123,9 @@ class LocalSearch:
 
             best_delta = 0
             best_move = []
-            for i in range(solu.get_num_jobs_machine(m)-3):
-                for j in range(1, solu.get_num_jobs_machine(m)-2):
-                    for k in range(2, solu.get_num_jobs_machine(m)-1):
+            for _ in range(solu.get_num_jobs_machine(m)-3):
+                for _ in range(1, solu.get_num_jobs_machine(m)-2):
+                    for _ in range(2, solu.get_num_jobs_machine(m)-1):
                         delta = -self.inst.get_s(solu.get_pre(job1), job1)
                         delta -= self.inst.get_s(solu.get_pre(job2), job2)
                         delta -= self.inst.get_s(solu.get_pre(job3), job3)
@@ -137,7 +137,6 @@ class LocalSearch:
                         if delta < best_delta:
                             best_delta = delta
                             best_move = [job1, job2, job3]
-
                             job3 = solu.get_suc(job3)
 
                     job2 = solu.get_suc(job2)

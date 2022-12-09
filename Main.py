@@ -29,7 +29,7 @@ if __name__ == "__main__":
     solu.to_string()
 
     print("================ 3-opt=============")
-    ls.opt3(solu, solu.get_makespan_idx())
+    ls.gen_insert(solu, solu.get_makespan_idx())
     print(solu.get_makespan())
     solu.check_solution()
     
