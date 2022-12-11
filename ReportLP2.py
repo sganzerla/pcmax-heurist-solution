@@ -14,7 +14,7 @@ def write_file(file_report, text):
 
 if __name__ == "__main__":
 
-    # python.exe .\Report3.py -s .\instance\
+    # python.exe .\ReportLP2.py -s .\instance\
 
     parser = OptionParser()
     parser.add_option("-s", "--path", dest="path", type="string")
@@ -32,10 +32,10 @@ if __name__ == "__main__":
     n_files = len(files)
     aux = 1
 
-    report_file = "report_3_" + time.strftime("%H_%M_%S.csv", time.localtime())
+    report_file = "report_lp2_" + time.strftime("%H_%M_%S.csv", time.localtime())
     head = "idx; inst; m; j; cmax_init; time_init; "
-    head += "cmax_g_ins; cmax_swap; cmax_g_ins; cmax_ins;  "
-    head += "cmax_g_ins; cmax_ins; cmax_g_ins; cmax_swap; "
+    head += "cmax_swap; cmax_ins; cmax_g_ins; "
+    head += "cmax_swap; cmax_ins; cmax_g_ins; "
     head += "time_ls; reduction; \n"
     write_file(report_file, head)
 
@@ -57,29 +57,9 @@ if __name__ == "__main__":
 
         ls = LocalSearch(inst)
         start = time.time()
-
-        for i in range(inst.get_m()):
-            ls.gen_insert(solu, i)
-        report += f"{solu.get_makespan()}; "
-        print("G_INS", solu.get_makespan())
-
         ls.swap(solu)
         report += f"{solu.get_makespan()}; "
         print("SWAP", solu.get_makespan())
-
-        for i in range(inst.get_m()):
-            ls.gen_insert(solu, i)
-        report += f"{solu.get_makespan()}; "
-        print("G_INS", solu.get_makespan())
-
-        ls.insertion(solu)
-        report += f"{solu.get_makespan()}; "
-        print("INS:", solu.get_makespan())
-
-        for i in range(inst.get_m()):
-            ls.gen_insert(solu, i)
-        report += f"{solu.get_makespan()}; "
-        print("G_INS", solu.get_makespan())
 
         ls.insertion(solu)
         report += f"{solu.get_makespan()}; "
@@ -93,11 +73,21 @@ if __name__ == "__main__":
         ls.swap(solu)
         report += f"{solu.get_makespan()}; "
         print("SWAP", solu.get_makespan())
+
+        ls.insertion(solu)
+        report += f"{solu.get_makespan()}; "
+        print("INS:", solu.get_makespan())
+
+        for i in range(inst.get_m()):
+            ls.gen_insert(solu, i)
+        report += f"{solu.get_makespan()}; "
+        print("G_INS", solu.get_makespan())
 
         end = time.time()
-        report += f"{(end - start):.4f}; {(((cmax - solu.get_makespan())/cmax)*100):.2f}%; \n"
-        print(f"time_ls: {(end - start):.4f}")
-        print(f"reduction: {(((cmax - solu.get_makespan())/cmax)*100):.2f}%;")
+        red = (cmax - solu.get_makespan())/cmax
+        if red > 0:
+            red = red * -1
+        report += f"{(end - start):.4f}; {red}; \n"
         aux += 1
         write_file(report_file, report)
     print(f"File {report_file} created with success.\n")
