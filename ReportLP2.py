@@ -34,8 +34,8 @@ if __name__ == "__main__":
 
     report_file = "report_lp2_" + time.strftime("%H_%M_%S.csv", time.localtime())
     head = "idx; inst; m; j; cmax_init; time_init; "
-    head += "cmax_swap; cmax_ins; cmax_g_ins; "
-    head += "cmax_swap; cmax_ins; cmax_g_ins; "
+    head += "cmax_i; cmax_ii; cmax_iii; "
+    head += "cmax_i; cmax_ii; cmax_iii; "
     head += "time_ls; reduction; \n"
     write_file(report_file, head)
 
