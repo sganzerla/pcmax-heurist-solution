@@ -61,12 +61,10 @@ if __name__ == "__main__":
         print("INS:", solu.get_makespan())
 
         end = time.time()
-        red = ((cmax - solu.get_makespan())/cmax)*100
+        red = (cmax - solu.get_makespan())/cmax
         if red > 0:
             red = red * -1
-        report += f"{(end - start):.4f}; {(red):.2f}; \n"
-        print(f"time_ls: {(end - start):.4f}")
-        print(f"reduction: {(red):.2f}%;")
+        report += f"{(end - start):.4f}; {red}; \n"
         aux += 1
         write_file(report_file, report)
     print(f"File {report_file} created with success.\n")
