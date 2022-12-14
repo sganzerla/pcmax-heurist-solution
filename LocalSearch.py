@@ -12,45 +12,44 @@ class LocalSearch:
         while True:
             best_delta = 0
             best_mov = []
-            for i in range(self.inst.get_m()):
-                if solu.get_c(i) < solu.get_makespan():
+            # já pega direto a makespan sem precisar ficar iterando o laco
+            i = solu.get_makespan_idx()
+            mi = self.inst.get_n()+i
+            jobi = solu.get_suc(mi)
+            while jobi != mi:
+                deltai = self.inst.get_s(
+                    solu.get_pre(jobi), solu.get_suc(jobi))
+                deltai -= self.inst.get_s(solu.get_pre(jobi), jobi)
+                deltai -= self.inst.get_s(jobi, solu.get_suc(jobi))
+
+                if solu.get_c(i) + deltai > solu.get_makespan():
+                    jobi = solu.get_suc(jobi)
                     continue
-                mi = self.inst.get_n()+i
-                jobi = solu.get_suc(mi)
-                while jobi != mi:
-                    deltai = self.inst.get_s(
-                        solu.get_pre(jobi), solu.get_suc(jobi))
-                    deltai -= self.inst.get_s(solu.get_pre(jobi), jobi)
-                    deltai -= self.inst.get_s(jobi, solu.get_suc(jobi))
-
-                    if solu.get_c(i) + deltai > solu.get_makespan():
-                        jobi = solu.get_suc(jobi)
+                for j in range(self.inst.get_m()):
+                    mj = self.inst.get_n()+j
+                    if j == i or solu.get_suc(mj) == mj:
                         continue
-                    for j in range(self.inst.get_m()):
-                        mj = self.inst.get_n()+j
-                        if j == i or solu.get_suc(mj) == mj:
-                            continue
-                        jobj = mj
-                        while True:
-                            deltaj = -self.inst.get_s(jobj, solu.get_suc(jobj))
-                            deltaj += self.inst.get_s(jobi, solu.get_suc(jobj))
-                            deltaj += self.inst.get_s(jobj, jobi)
+                    jobj = mj
+                    while True:
+                        deltaj = -self.inst.get_s(jobj, solu.get_suc(jobj))
+                        deltaj += self.inst.get_s(jobi, solu.get_suc(jobj))
+                        deltaj += self.inst.get_s(jobj, jobi)
 
-                            if solu.get_c(j) + deltaj > solu.get_makespan():
-                                jobj = solu.get_suc(jobj)
-                                if jobj == mj:
-                                    break
-                                continue
-
-                            if deltai + deltaj < best_delta:
-                                best_delta = deltai + deltaj
-                                best_mov = [i, jobi, j, jobj]
-
+                        if solu.get_c(j) + deltaj > solu.get_makespan():
                             jobj = solu.get_suc(jobj)
                             if jobj == mj:
                                 break
+                            continue
 
-                    jobi = solu.get_suc(jobi)
+                        if deltai + deltaj < best_delta:
+                            best_delta = deltai + deltaj
+                            best_mov = [i, jobi, j, jobj]
+
+                        jobj = solu.get_suc(jobj)
+                        if jobj == mj:
+                            break
+
+                jobi = solu.get_suc(jobi)
 
             if best_delta == 0:
                 break
@@ -62,42 +61,41 @@ class LocalSearch:
         while True:
             best_delta = 0
             best_mov = []
-            for i in range(self.inst.get_m()):
-                if solu.get_c(i) < solu.get_makespan():
-                    continue
-                mi = self.inst.get_n()+i
-                jobi = solu.get_suc(mi)
-                while jobi != mi:
-                    for j in range(i+1, self.inst.get_m()):
-                        mj = self.inst.get_n()+j
-                        jobj = solu.get_suc(mj)
-                        while jobj != mj:
-                            deltaj = -self.inst.get_s(solu.get_pre(jobj), jobj)
-                            deltaj -= self.inst.get_s(jobj, solu.get_suc(jobj))
-                            deltaj += self.inst.get_s(solu.get_pre(jobj), jobi)
-                            deltaj += self.inst.get_s(jobi, solu.get_suc(jobj))
+            # já pega direto a makespan sem precisar ficar iterando o laco
+            i = solu.get_makespan_idx()
+            mi = self.inst.get_n()+i
+            jobi = solu.get_suc(mi)
+            while jobi != mi:
+                for j in range(i+1, self.inst.get_m()):
+                    mj = self.inst.get_n()+j
+                    jobj = solu.get_suc(mj)
+                    while jobj != mj:
+                        deltaj = -self.inst.get_s(solu.get_pre(jobj), jobj)
+                        deltaj -= self.inst.get_s(jobj, solu.get_suc(jobj))
+                        deltaj += self.inst.get_s(solu.get_pre(jobj), jobi)
+                        deltaj += self.inst.get_s(jobi, solu.get_suc(jobj))
 
-                            deltai = -self.inst.get_s(solu.get_pre(jobi), jobi)
-                            deltai -= self.inst.get_s(jobi, solu.get_suc(jobi))
-                            deltai += self.inst.get_s(solu.get_pre(jobi), jobj)
-                            deltai += self.inst.get_s(jobj, solu.get_suc(jobi))
+                        deltai = -self.inst.get_s(solu.get_pre(jobi), jobi)
+                        deltai -= self.inst.get_s(jobi, solu.get_suc(jobi))
+                        deltai += self.inst.get_s(solu.get_pre(jobi), jobj)
+                        deltai += self.inst.get_s(jobj, solu.get_suc(jobi))
 
-                            if solu.get_c(j) + deltaj > solu.get_makespan() or \
-                               solu.get_c(i) + deltai > solu.get_makespan():
-                                jobj = solu.get_suc(jobj)
-                                if jobj == mj:
-                                    break
-                                continue
-
-                            if solu.get_c(j) + deltaj < solu.get_makespan() or \
-                               solu.get_c(i) + deltai < solu.get_makespan():
-                                if deltai + deltaj <= best_delta:
-                                    best_delta = deltai + deltaj
-                                    best_mov = [i, jobi, j, jobj]
-
+                        if solu.get_c(j) + deltaj > solu.get_makespan() or \
+                           solu.get_c(i) + deltai > solu.get_makespan():
                             jobj = solu.get_suc(jobj)
+                            if jobj == mj:
+                                break
+                            continue
 
-                    jobi = solu.get_suc(jobi)
+                        if solu.get_c(j) + deltaj < solu.get_makespan() or \
+                           solu.get_c(i) + deltai < solu.get_makespan():
+                            if deltai + deltaj <= best_delta:
+                                best_delta = deltai + deltaj
+                                best_mov = [i, jobi, j, jobj]
+
+                        jobj = solu.get_suc(jobj)
+
+                jobi = solu.get_suc(jobi)
 
             if best_delta == 0:
                 break
@@ -111,7 +109,8 @@ class LocalSearch:
 
     def gen_insert(self, solu: Solution, m: int) -> bool:
         if solu.get_num_jobs_machine(m) < 3:
-            print("insercao generalizada nao pode ser aplicada, nr insuficientes de tarefas: 3")
+            print(
+                "insercao generalizada nao pode ser aplicada, nr insuficientes de tarefas: 3")
             return False
 
         ok = False
