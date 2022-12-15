@@ -51,3 +51,24 @@ if __name__ == "__main__":
     print("\n\n") 
     solu.to_string()
 
+    r = open('pontos.txt', 'w')
+    r.write(str(inst.get_m())+" "+str(inst.get_n())+"\n")
+#    for i in range(inst.get_n()):
+#        r.write(str(inst.get_p(i))+"\n")
+
+    for i in range(inst.get_n()):
+        r.write("0 " + str(i+1) + " " + str(inst.get_s(inst.get_n(),i))+"\n") 
+        
+    for i in range(inst.get_n()):
+        for j in range(inst.get_n()):
+            if j == i:
+               continue
+            r.write(str(i+1) +" " + str(j+1) + " " + str(inst.get_s(i,j)) +"\n") 
+    
+    for i in range(inst.get_n()):
+        r.write(str(i+1) + " 0 " + str(inst.get_s(i,inst.get_n()))+"\n") 
+                
+    r.close()
+
+
+
