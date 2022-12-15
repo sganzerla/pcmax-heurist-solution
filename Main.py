@@ -17,39 +17,31 @@ if __name__ == "__main__":
 
     path = opts.path
 
-    # add path root com inst
-
-
     ex = Extract(path)
     inst = Instance(ex)
     solu = Solution(inst)
 
     greedy = ConstructiveSolution(inst)
     ls = LocalSearch(inst)
-    
-    #greedy.build_naive(solu)
+
+    # greedy.build_naive(solu)
     greedy.build_greedy(solu)
     solu.to_string()
-    
-    
-    print("================ Insertion =============") 
-    ls.insertion(solu)        
-    print(solu.get_makespan())
-    solu.check_solution() 
 
-    print("================ Swap      =============") 
-    ls.swap(solu)        
+    print("================ 3-opt=============")
+    ls.gen_insert(solu, solu.get_makespan_idx())
     print(solu.get_makespan())
-    solu.check_solution() 
-   
-    print("================ 3-opt=============") 
-    for m in range(inst.get_m()) : 
-        ls.opt3(solu, m)
+    solu.check_solution()
+    
+    print("================ Insertion =============")
+    ls.insertion(solu)
     print(solu.get_makespan())
     solu.check_solution()
 
-    print("\n\n") 
-    solu.to_string()
+    print("================ Swap      =============")
+    ls.swap(solu)
+    print(solu.get_makespan())
+    solu.check_solution()
 
     r = open('pontos.txt', 'w')
     r.write(str(inst.get_m())+" "+str(inst.get_n())+"\n")

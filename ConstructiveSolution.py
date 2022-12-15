@@ -46,7 +46,7 @@ class ConstructiveSolution:
                     delta += self.inst.get_s(job, i)
                     # add arc dir
                     delta += self.inst.get_s(i, suc)
-                        
+
                     if delta < best_delta:
                         best_delta = delta
                         best_move = [j, job]
