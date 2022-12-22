@@ -6,6 +6,9 @@ Repositório de estudo sobre o problema PCMax com máquinas paralelas idênticas
 
 Aplicado técnicas de multi vizinhança para encontrar boas soluções.
 
+* [Projeto](local_search/)
+* [Artigo](local_search/Artigo%20HM%20v9%20(4).pdf)
+
 ## [Solução Algoritmo Genético](genetico/)
 
 Utilizando algoritmo genético para encontrar boas soluções.
