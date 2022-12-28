@@ -12,3 +12,5 @@ Aplicado técnicas de multi vizinhança para encontrar boas soluções.
 ## [Solução Algoritmo Genético](genetico/)
 
 Utilizando algoritmo genético para encontrar boas soluções.
+
+Link do Latex com o artigo em desenvolvimento [aqui](https://www.overleaf.com/5332536166tbfygpjgdyzs).
