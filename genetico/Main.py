@@ -22,5 +22,6 @@ if __name__ == "__main__":
 
     ga = GA(init_pop)
     
-    # ga.next_generation(50)
+    ga.next_generation(4)
+    print(ga.best_fitness.cmax)
     
