@@ -17,21 +17,32 @@ if __name__ == "__main__":
 
     path = opts.path
 
+    # add path root com inst
+
+
     ex = Extract(path)
     inst = Instance(ex)
+    solu = Solution(inst)
 
-    initial_population = []
-    for i in range(5):
-        solu = Solution(inst)
-        greedy = ConstructiveSolution(inst)
-        greedy.build_naive(solu)
-        initial_population.append(solu)
+    greedy = ConstructiveSolution(inst)
+    ls = LocalSearch(inst)
+    # greedy.build_naive(solu)
+    # solu.to_string()
+    # solu.check_fact()
+    # solu.check_solution()
+    # solu.reset()
+    
+    # inst.to_string()
+    greedy.build_greedy(solu)
+    solu.to_string()
+    solu.check_solution()
+    print("================ Swap      =============") 
+    ls.swap(solu)        
+    solu.to_string()
+    solu.check_solution() 
+    print("================ Insertion =============") 
+    ls.insertion(solu)        
+    solu.to_string()
+    solu.check_solution() 
+    
 
-    for i in initial_population:
-        person: Solution = i
-        print(person.cmax)
-
-    ordenad = sorted(initial_population, key=lambda x: x.cmax)
-    for i in initial_population:
-        person: Solution = i
-        print(person.cmax)
