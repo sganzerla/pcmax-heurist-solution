@@ -1,6 +1,6 @@
-import numpy as np
-from Instance import *
 from enum import IntEnum
+
+from Instance import *
 
 
 class Node(IntEnum):
@@ -126,7 +126,7 @@ class Solution:
         self.mj[job] = m
         self.n[m] += 1
 
-    def ejeta_job(self, m: int, job: int):
+    def eject_job(self, m: int, job: int):
 
         suc = self.m[Node.Suc][job]
         pre = self.m[Node.Pre][job]
@@ -194,7 +194,7 @@ class Solution:
             pre = n
             total = 0
             print(f"M{aux_m}: {[i + 1 for i in machine]}")
-            itens = len(machine)
+            items = len(machine)
             aux_j = 0
             for job in machine:
                 jobs_used.append(job)
@@ -204,7 +204,7 @@ class Solution:
                 total += setup_time
                 print(f"    ({pre + 1}, {job + 1}): {setup_time}")
                 pre = suc
-                if aux_j == itens - 1:
+                if aux_j == items - 1:
                     suc = n
                     setup_time = self.inst.get_s(pre, suc)
                     total += setup_time

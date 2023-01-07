@@ -1,4 +1,3 @@
-import numpy as np
 from Extract import *
 
 
@@ -33,7 +32,7 @@ class Instance:
     def get_p_copy(self) -> np.ndarray:
         return self.__p.copy()
 
-    def get_s(self, i: int, j: int) -> np.ndarray:
+    def get_s(self, i: int, j: int) -> int:
         if i == j:
             return 0
         if i >= self.__n:
