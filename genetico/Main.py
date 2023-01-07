@@ -12,7 +12,7 @@ if __name__ == "__main__":
     total_makespan = 0
     
     
-    for i in range(5):
+    for i in range(50):
         solu = Solution(inst)
         greedy = ConstructiveSolution(inst)
         greedy.build_naive(solu)
