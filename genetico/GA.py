@@ -46,35 +46,30 @@ class GA:
         group_ind3 = []
         group_ind4 = []
         group_ind5 = []
-        aux = 0
+
         for i in range(idx_g1, idx_g2):
-            print(i, parent[i].sol.cmax, parent[i].fitness)
             group_fitness_sum[0] += parent[i].fitness
             group_ind1.append(parent[i].sol)
-            aux += 1
 
         for i in range(idx_g2, idx_g3):
-            print(i, parent[i].sol.cmax, parent[i].fitness)
             group_fitness_sum[1] += parent[i].fitness
             group_ind2.append(parent[i].sol)
 
         for i in range(idx_g3, idx_g4):
-            print(i, parent[i].sol.cmax, parent[i].fitness)
             group_fitness_sum[2] += parent[i].fitness
             group_ind3.append(parent[i].sol)
 
         for i in range(idx_g4, idx_g5):
-            print(i, parent[i].sol.cmax, parent[i].fitness)
             group_fitness_sum[3] += parent[i].fitness
             group_ind4.append(parent[i].sol)
 
         for i in range(idx_g5, self.__n_parent):
-            print(i, parent[i].sol.cmax, parent[i].fitness)
             group_fitness_sum[4] += parent[i].fitness
             group_ind5.append(parent[i].sol)
 
         list_pop = [group_ind1, group_ind2,
                     group_ind3, group_ind4, group_ind5]
+
         for i in range(int(self.__n_parent/2)):
             parent_rnd = random.choices(
                 list_pop, weights=group_fitness_sum, k=2)
@@ -83,14 +78,15 @@ class GA:
             p2: Solution = parent_rnd[1][0]
             jobs_p2 = self.__get_jobs_by_machine__(p2, p2.cmax_idx)
 
-
+            half_jobs = int((len(jobs_p1) + len(jobs_p2)) / 2)
+            # one point cut
+            # TODO talvez fazer o sorteio para cada máquina e não da média
+            idx_cut = random.choice(range(1, half_jobs - 1))
+            print(half_jobs, idx_cut, p1.cmax,  jobs_p1, p2.cmax, jobs_p2)
+            
             # TODO sortear o indice do corte do cromossomo
-            
-            
-            
 
         return self.__population
-
 
     def __mutation_gene_make__(self, percent: float = 0.20):
 
