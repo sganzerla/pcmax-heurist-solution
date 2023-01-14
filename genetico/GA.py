@@ -6,7 +6,7 @@ class GA:
     def __init__(self, init_popul: List[Solution]):
         self.popul_size: int = len(init_popul)
         self.popul: List[Solution] = init_popul
-        self.popul_fit: dict = None
+        self.popul_fit: List[Individual] = None
         self.parent: List[List[Solution]] = None
         self.generation: int = 1
         self.incum_sol: Solution = init_popul[0]
@@ -14,13 +14,12 @@ class GA:
     def __calc_fitness__(self):
 
         pop_ranked = sorted(self.popul, key=lambda x: x.cmax)
-        fitness = {}
+        fitness = np.ndarray(self.popul_size, dtype=Individual)
         total_fitness = 0
 
         # sum fitness total
         for i in range(self.popul_size):
-            sol: Solution = pop_ranked[i]
-            total_fitness += 1 / sol.cmax
+            total_fitness += 1 / pop_ranked[i].cmax
 
         # fitness individual
         for i in range(self.popul_size):
@@ -33,13 +32,14 @@ class GA:
 
     def __crossover__(self):
 
+        # acessar os casais
         print(self.parent[0][0].cmax, self.parent[1][0].cmax)
         
         # self.popul = lista com pais e os filhos
 
     def __selection_parent__(self):
 
-        popul_fit: List[Individual] = list(self.popul_fit.values())
+        popul_fit: List[Individual] = self.popul_fit
 
         idx_g5 = int(self.popul_size * 0.80)
         idx_g4 = int(self.popul_size * 0.60)
@@ -135,11 +135,11 @@ class GA:
 
 class Individual:
     def __init__(self, sol: Solution, fitness: float):
-        self.sol = sol
-        self.fitness = fitness
+        self.sol: Solution = sol
+        self.fitness: float = fitness
 
 class Parent:
     def __init__(self, sol_a: Solution, sol_b: Solution):
-        self.sol_a = sol_a
-        self.sol_b = sol_b
+        self.sol_a: Solution = sol_a
+        self.sol_b: Solution = sol_b
     

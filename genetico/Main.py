@@ -17,5 +17,5 @@ if __name__ == "__main__":
 
     ga = GA(init_pop)
 
-    ga.next_generation(2)
+    ga.next_generation(20)
     print(ga.incum_sol.cmax)
