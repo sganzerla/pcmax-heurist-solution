@@ -7,13 +7,13 @@ if __name__ == "__main__":
     
     inst = Instance(Extract(path))
 
-    init_pop = []
+    init_pop = np.ndarray(50, dtype=Solution)
 
+    greedy = ConstructiveSolution(inst)
     for i in range(50):
-        greedy = ConstructiveSolution(inst)
         solu = Solution(inst)
         greedy.build_naive(solu)
-        init_pop.append(solu)
+        init_pop[i] = solu
 
     ga = GA(init_pop)
 
