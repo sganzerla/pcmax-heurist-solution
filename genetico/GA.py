@@ -114,13 +114,15 @@ class GA:
         solu.insert_job(idx_m, j1, pre_j2)
 
     @staticmethod
-    def __get_jobs_by_machine__(solu, idx_m):
+    def __get_jobs_by_machine__(solu: Solution, idx_m: int):
         first_job = solu.m[Node.Suc][solu.inst.get_n() + idx_m]
-        jobs_make = []
-        # jobs cmax
+        num_jobs_machine = solu.get_num_jobs_machine(idx_m)
+        jobs_make = np.ones(num_jobs_machine, dtype=int)
+        aux = 0
         while first_job < solu.inst.get_n():
-            jobs_make.append(first_job)
+            jobs_make[aux] = first_job
             first_job = solu.m[Node.Suc][first_job]
+            aux += 1
         return jobs_make
 
     def next_generation(self, n_generation: int):
