@@ -1,100 +1,97 @@
 from Solution import *
 import random
-
+from typing import List
 
 class GA:
-    def __init__(self, init_pop: list):
-        self.__n_parent: int = len(init_pop)
-        self.__population: list = init_pop
-        self.__fit_population: dict
-        # self.__parent: tuple
-        self.__generation: int = 1
-        self.incumbent: Solution = init_pop[0]
+    def __init__(self, init_popul: List[Solution]):
+        self.popul_size: int = len(init_popul)
+        self.popul: List[Solution] = init_popul
+        self.popul_fit: dict
+        self.parent: List[Parent]
+        self.generation: int = 1
+        self.incum_sol: Solution = init_popul[0]
 
     def __calc_fitness__(self):
 
-        pop_ranked = sorted(self.__population, key=lambda x: x.cmax)
+        pop_ranked = sorted(self.popul, key=lambda x: x.cmax)
         fitness = {}
         total_fitness = 0
 
         # sum fitness total
-        for i in range(self.__n_parent):
+        for i in range(self.popul_size):
             sol: Solution = pop_ranked[i]
             total_fitness += 1 / sol.cmax
 
         # fitness individual
-        for i in range(self.__n_parent):
+        for i in range(self.popul_size):
             sol: Solution = pop_ranked[i]
             fit = (1 / sol.cmax) / total_fitness
             fitness[i] = Individual(sol, fit)
 
-        self.incumbent = pop_ranked[0]
-        self.__fit_population = fitness
+        self.incum_sol = pop_ranked[0]
+        self.popul_fit = fitness
 
-    def __crossover_parent__(self):
+    def __crossover__(self):
 
-        parent: list[Individual] = list(self.__fit_population.values())
+        return self.popul
+    
+    
+    def __selection_parent__(self):
 
-        idx_g5 = int(self.__n_parent * 0.80)
-        idx_g4 = int(self.__n_parent * 0.60)
-        idx_g3 = int(self.__n_parent * 0.40)
-        idx_g2 = int(self.__n_parent * 0.20)
+        popul_fit: List[Individual] = list(self.popul_fit.values())
+
+        idx_g5 = int(self.popul_size * 0.80)
+        
+        idx_g4 = int(self.popul_size * 0.60)
+        idx_g3 = int(self.popul_size * 0.40)
+        idx_g2 = int(self.popul_size * 0.20)
         idx_g1 = 0
-        group_fitness_sum = np.zeros(5)
-        group_ind1 = []
-        group_ind2 = []
-        group_ind3 = []
-        group_ind4 = []
-        group_ind5 = []
+        group_fit_sum = np.zeros(5)
+        group_idx1 = []
+        group_idx2 = []
+        group_idx3 = []
+        group_idx4 = []
+        group_idx5 = []
 
         for i in range(idx_g1, idx_g2):
-            group_fitness_sum[0] += parent[i].fitness
-            group_ind1.append(parent[i].sol)
+            group_fit_sum[0] += popul_fit[i].fitness
+            group_idx1.append(popul_fit[i].sol)
 
-        for i in range(idx_g2, idx_g3):
-            group_fitness_sum[1] += parent[i].fitness
-            group_ind2.append(parent[i].sol)
+            i2 = i + idx_g2
+            group_fit_sum[1] += popul_fit[i2].fitness
+            group_idx2.append(popul_fit[i2].sol)
 
-        for i in range(idx_g3, idx_g4):
-            group_fitness_sum[2] += parent[i].fitness
-            group_ind3.append(parent[i].sol)
+            i3 = i + idx_g3
+            group_fit_sum[2] += popul_fit[i3].fitness
+            group_idx3.append(popul_fit[i3].sol)
 
-        for i in range(idx_g4, idx_g5):
-            group_fitness_sum[3] += parent[i].fitness
-            group_ind4.append(parent[i].sol)
+            i4 = i + idx_g4
+            group_fit_sum[3] += popul_fit[i4].fitness
+            group_idx4.append(popul_fit[i4].sol)
 
-        for i in range(idx_g5, self.__n_parent):
-            group_fitness_sum[4] += parent[i].fitness
-            group_ind5.append(parent[i].sol)
+            i5 = i + idx_g5
+            group_fit_sum[4] += popul_fit[i5].fitness
+            group_idx5.append(popul_fit[i5].sol)
 
-        list_pop = [group_ind1, group_ind2,
-                    group_ind3, group_ind4, group_ind5]
 
-        for i in range(int(self.__n_parent/2)):
-            parent_rnd = random.choices(
-                list_pop, weights=group_fitness_sum, k=2)
-            p1: Solution = parent_rnd[0][0]
-            jobs_p1 = self.__get_jobs_by_machine__(p1, p1.cmax_idx)
-            p2: Solution = parent_rnd[1][0]
-            jobs_p2 = self.__get_jobs_by_machine__(p2, p2.cmax_idx)
+        list_pop = [group_idx1, group_idx2,
+                    group_idx3, group_idx4, group_idx5]
 
-            half_jobs = int((len(jobs_p1) + len(jobs_p2)) / 2)
-            # one point cut
-            # TODO talvez fazer o sorteio para cada máquina e não da média
-            idx_cut = random.choice(range(1, half_jobs - 1))
-            print(half_jobs, idx_cut, p1.cmax,  jobs_p1, p2.cmax, jobs_p2)
-            
-            # TODO sortear o indice do corte do cromossomo
+        parent = []
+        for i in range(int(self.popul_size/2)):
+            rnd = random.choices(list_pop, weights=group_fit_sum, k=2)
+            p1: Solution = rnd[0][0]
+            p2: Solution = rnd[1][0]
+            parent.append(Parent(p1, p2))
+        
+        self.parent = parent
 
-        return self.__population
+    def __make_mutation__(self, percent: float = 0.10):
 
-    def __mutation_gene_make__(self, percent: float = 0.20):
-
-        k = int(self.__n_parent * percent)
-        # 20% parents
-        change_gene = random.choices(range(self.__n_parent), k=k)
+        k = int(self.popul_size * percent)
+        change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
-            self.__swap_random__(self.__population[i])
+            self.__swap_random__(self.popul[i])
 
     @staticmethod
     def __swap_random__(solu: Solution):
@@ -132,12 +129,19 @@ class GA:
 
         for _ in range(n_generation):
             self.__calc_fitness__()
-            self.__crossover_parent__()  # TODO
-            self.__mutation_gene_make__()  # ok
-            self.__generation += 1
+            self.__selection_parent__()
+            self.__crossover__()
+            self.__make_mutation__()  # refatorar está muito caro
+            self.generation += 1
 
 
 class Individual:
     def __init__(self, sol: Solution, fitness: float):
         self.sol = sol
         self.fitness = fitness
+
+class Parent:
+    def __init__(self, sol_a: Solution, sol_b: Solution):
+        self.sol_a = sol_a
+        self.sol_b = sol_b
+    
