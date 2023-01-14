@@ -8,33 +8,37 @@ class GA:
         self.popul: List[Solution] = init_popul
         self.popul_fit: List[Individual] = None
         self.parent: List[List[Solution]] = None
+        self.children: List[Solution] = None
         self.generation: int = 1
-        self.incum_sol: Solution = init_popul[0]
+        self.incum_sol: Solution = None
 
     def __calc_fitness__(self):
-
+        
         pop_ranked = sorted(self.popul, key=lambda x: x.cmax)
+       
         fitness = np.ndarray(self.popul_size, dtype=Individual)
         total_fitness = 0
-
+        
         # sum fitness total
+        i = 0
         for i in range(self.popul_size):
             total_fitness += 1 / pop_ranked[i].cmax
 
         # fitness individual
+        i = 0
         for i in range(self.popul_size):
-            sol: Solution = pop_ranked[i]
-            fit = (1 / sol.cmax) / total_fitness
-            fitness[i] = Individual(sol, fit)
+            fit = (1 / pop_ranked[i].cmax) / total_fitness
+            fitness[i] = Individual(pop_ranked[i], fit)
 
+        # atualizando o valor da incumbente
         self.incum_sol = pop_ranked[0]
         self.popul_fit = fitness
 
     def __crossover__(self):
 
         # acessar os casais
-        print(self.parent[0][0].cmax, self.parent[1][0].cmax)
-        
+        a = self.parent[0][0].cmax, self.parent[1][0].cmax
+        # self.children = 
         # self.popul = lista com pais e os filhos
 
     def __selection_parent__(self):
@@ -46,7 +50,7 @@ class GA:
         idx_g3 = int(self.popul_size * 0.40)
         idx_g2 = int(self.popul_size * 0.20)
         idx_g1 = 0
-        fit_sum_group = np.zeros(5)
+        fit_sum_group = np.zeros(5, dtype=float)
         for i in range(idx_g1, idx_g2):
             i1 = i + idx_g1
             fit_sum_group[0] += popul_fit[i1].fitness
@@ -85,10 +89,12 @@ class GA:
         self.parent = parent
 
     def __make_mutation__(self, percent: float = 0.10):
-
         k = int(self.popul_size * percent)
+        # mutação apenas nos filhos
+        
         change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
+            # self.__swap_random__(self.children[i])
             self.__swap_random__(self.popul[i])
 
     @staticmethod
@@ -131,7 +137,8 @@ class GA:
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
-            self.__make_mutation__()  # refatorar está muito caro
+            self.__make_mutation__() # TODO mutar os filhos
+
             self.generation += 1
 
 

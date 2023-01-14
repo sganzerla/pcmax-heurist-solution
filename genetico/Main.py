@@ -7,15 +7,23 @@ if __name__ == "__main__":
     
     inst = Instance(Extract(path))
 
-    init_pop = np.ndarray(50, dtype=Solution)
-
-    greedy = ConstructiveSolution(inst)
-    for i in range(50):
+    pop_size = 50
+    
+    init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
+    const_sol = ConstructiveSolution(inst)
+    
+    for i in range(pop_size):
         solu = Solution(inst)
-        greedy.build_naive(solu)
+        const_sol.build_naive(solu)
         init_pop[i] = solu
 
+    # testando a adição de uma solução gulosa
+    solu = Solution(inst)
+    const_sol.build_greedy(solu)
+    
+    init_pop[0] = solu
+    print("CMax Guloso: ", solu.cmax)
     ga = GA(init_pop)
 
     ga.next_generation(20)
-    print(ga.incum_sol.cmax)
+    print("CMax Genético: ", ga.incum_sol.cmax)
