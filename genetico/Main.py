@@ -23,7 +23,7 @@ if __name__ == "__main__":
     
     init_pop[0] = solu
     print("CMax Guloso: ", solu.cmax)
-    ga = GA(init_pop)
+    ga = GA(init_pop, inst)
 
-    ga.next_generation(20)
-    print("CMax Genético: ", ga.incum_sol.cmax)
+    ga.next_generation(1)
+    # print("CMax Genético: ", ga.incum_sol.cmax)

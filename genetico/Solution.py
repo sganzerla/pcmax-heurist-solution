@@ -104,8 +104,19 @@ class Solution:
             self.cmax_idx = np.argmax(self.c)
             self.cmax = self.c[self.cmax_idx]
 
-    def insert_job(self, m: int, job: int, pre: int):
+    def create_solution(self, jobs: np.ndarray, size_each_m: np.ndarray):
+        j_aux = 0
+        for m in range(self.inst.get_m()):
+            size = size_each_m[m]
+            pre = self.inst.get_n() + m
+            for _ in range(size):
+                job = jobs[j_aux]
+                self.insert_job(m, job, pre)
+                pre = job
+                j_aux += 1 
+        
 
+    def insert_job(self, m: int, job: int, pre: int):
         suc = self.m[Node.Suc][pre]
         # remove arco
         self.c[m] += -self.inst.get_s(pre, suc)
