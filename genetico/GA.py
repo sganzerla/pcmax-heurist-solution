@@ -16,6 +16,7 @@ class GA:
 
     def __start_population__(self):
         if self.generation > 1:
+            # junta a população original com a nova geração
             self.popul = np.concatenate([self.popul, self.children], dtype=Solution, axis=0)
 
     def __calc_fitness__(self):
@@ -127,28 +128,43 @@ class GA:
             cut = random.randint(1, n-1)
             child1 = -np.ones(n, dtype=int)
             child2 = -np.ones(n, dtype=int)
-
-            for k in range(n):
-                if k < cut:
-                    child1[k] = jobs_pa[k]
-                    child2[k] = jobs_pb[k]
-                else:
-                    child1[k] = jobs_pb[k]
-                    child2[k] = jobs_pa[k]
+            print("\n")
+            print(cut)
+            print("pai_a:", jobs_pa)
+            print("pai_b:", jobs_pb)
+            
+            # crossover
+            childa = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
+            childb = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
+            
+            print("chi_a:", childa)
+            print("chi_b:", childb)
+            
+            # reparação
+            childa, childb = self.repar_gene(childa, childb)
+            
+                  
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
             # TODO fazer reparação no dna antes de usar
-            # sol_a.create_solution(child1, jobs_size_pa)
-            # sol_b.create_solution(child2, jobs_size_pb)
-            sol_a.create_solution(jobs_pa, jobs_size_pa)
-            sol_b.create_solution(jobs_pb, jobs_size_pb)
+            sol_a.create_solution(child1, jobs_size_pa)
+            sol_b.create_solution(child2, jobs_size_pb)
             children1[p] = sol_a
             children2[p] = sol_b
 
-        self.children = np.concatenate(
-            [children1, children2], dtype=Solution, axis=0)
+        self.children = np.concatenate([children1, children2], axis=0)
 
+    def repar_gene(self, childa: np.ndarray, childb: np.ndarray):
+
+        visited = set()
+        dup = [x for x in childa if x in visited or (visited.add(x) or False)]
+    
+        print(dup)  # [1, 5, 1]
+
+
+        return childa, childb
+    
     def __make_mutation__(self, percent: float = 0.10):
         k = int(self.popul_size * percent)
 
