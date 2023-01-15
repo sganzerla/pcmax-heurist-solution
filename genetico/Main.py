@@ -7,7 +7,7 @@ if __name__ == "__main__":
     
     inst = Instance(Extract(path))
 
-    pop_size = 50
+    pop_size = 60
     
     init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
     const_sol = ConstructiveSolution(inst)
@@ -25,5 +25,5 @@ if __name__ == "__main__":
     print("CMax Guloso: ", solu.cmax)
     ga = GA(init_pop, inst)
 
-    ga.next_generation(1)
+    ga.next_generation(300)
     # print("CMax Genético: ", ga.incum_sol.cmax)

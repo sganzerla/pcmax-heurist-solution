@@ -2,6 +2,7 @@ from Solution import *
 import random
 from typing import List
 
+
 class GA:
     def __init__(self, init_popul: List[Solution], inst: Instance):
         self.popul_size: int = len(init_popul)
@@ -14,12 +15,13 @@ class GA:
         self.inst = inst
 
     def __calc_fitness__(self):
-        
+
+
         pop_ranked = sorted(self.popul, key=lambda x: x.cmax)
-       
+
         fitness = np.ndarray(self.popul_size, dtype=Individual)
         total_fitness = 0
-        
+
         # sum fitness total
         i = 0
         for i in range(self.popul_size):
@@ -37,66 +39,14 @@ class GA:
 
     def __crossover__(self):
 
-        self.__encoded__()
-
-    def __encoded_by_machine_error__(self):
-        
-        m = self.popul[0].inst.get_m()
-        n = self.popul[0].inst.get_n()
-        inst = self.popul[0].inst
-        for i in range(int(self.popul_size/2)):
-            crom1 = -np.ones(n, dtype=int)
-            crom2 = -np.ones(n, dtype=int)
-            for j in range(n):
-                crom1[j] = self.parent[0][i].get_job_machine(j)
-                crom2[j] = self.parent[1][i].get_job_machine(j)
-            print("\n-----------------------------------")
-            print(f"\nJobs ->   [{' '.join(str(l) for l in range(10))}]")
-            print(f"marcos: {self.parent[0][i].cmax} {crom1}")
-            print(f"silvia: {self.parent[1][i].cmax} {crom2}")
-            # sortear o ponto de corte no cromossomo
-            cut = random.randint(1, n-1)
-            print(f"\níndice corte: {cut}")
-            child1 = -np.zeros(n, dtype=int)
-            child2 = -np.zeros(n, dtype=int)
-            
-            for k in range(n):
-                if k < cut:
-                    child1[k] = crom1[k]
-                    child2[k] = crom2[k]
-                else:
-                    child1[k] = crom2[k]
-                    child2[k] = crom1[k]
-            print("marvia: ", child1)
-            print("silcos: ", child2)
-            
-            sol_a = Solution(inst)
-            sol_b = Solution(inst)
-            
-            
-            for ni in range(n):
-                m_chid1 = child1[ni]
-                pre = sol_a.get_pre(ni)
-                print("m", m_chid1, "pre", pre, "job", ni)
-                sol_a.insert_job(m_chid1, ni, pre)
-                
-                m_chid2 = child2[ni]
-                pre = sol_b.get_pre(ni)
-                print("m", m_chid2, "pre", pre, "job", ni)
-                sol_b.insert_job(m_chid2, ni, pre)
-                
-            sol_a.check_fact()
-            sol_b.check_fact()
-
-
-    def __encoded__(self):
-        
         m = self.inst.get_m()
         n = self.inst.get_n()
-        
-        n_pairs = int(self.popul_size/2)
-        children: List[Solution] = list(np.ndarray(self.popul_size, dtype=Solution))
-        
+
+        n_pairs = int(self.popul_size / 2)
+        # TODO MELHORAR
+        children: List[Solution] = list(
+            np.ndarray(self.popul_size, dtype=Solution))
+
         # iterar todos os casais
         for p in range(n_pairs):
             # sequencia de jobs daquela solução
@@ -113,22 +63,23 @@ class GA:
                 # primeiro job do pai a
                 jm_a = self.parent[0][p].m[Node.Suc][n + i]
                 jm_b = self.parent[1][p].m[Node.Suc][n + i]
-                
+
                 while jm_a < n:
                     jobs_pa_str += f" {jm_a}"
                     jm_a = self.parent[0][p].m[Node.Suc][jm_a]
                 while jm_b < n:
                     jobs_pb_str += f" {jm_b}"
                     jm_b = self.parent[1][p].m[Node.Suc][jm_b]
-            
-            
-            jobs_pa = np.asarray([int(i) for i in jobs_pa_str.split() if i.isdigit()])
-            jobs_pb = np.asarray([int(i) for i in jobs_pb_str.split() if i.isdigit()])
+
+            jobs_pa = np.asarray([int(i)
+                                 for i in jobs_pa_str.split() if i.isdigit()])
+            jobs_pb = np.asarray([int(i)
+                                 for i in jobs_pb_str.split() if i.isdigit()])
 
             cut = random.randint(1, n-1)
             child1 = -np.ones(n, dtype=int)
             child2 = -np.ones(n, dtype=int)
-            
+
             for k in range(n):
                 if k < cut:
                     child1[k] = jobs_pa[k]
@@ -136,19 +87,20 @@ class GA:
                 else:
                     child1[k] = jobs_pb[k]
                     child2[k] = jobs_pa[k]
-            
-            
-            
+
             sol_a = Solution(self.inst)
-            sol_b = Solution(self.inst) 
-            
+            sol_b = Solution(self.inst)
+
+            # TODO fazer reparação no dna antes de usar
+            # sol_a.create_solution(child1, jobs_size_pa)
+            # sol_b.create_solution(child2, jobs_size_pb)
             sol_a.create_solution(jobs_pa, jobs_size_pa)
             sol_b.create_solution(jobs_pb, jobs_size_pb)
             children.append(sol_a)
             children.append(sol_b)
-        
+
         self.children = children
-        
+
     def __selection_parent__(self):
 
         popul_fit: List[Individual] = self.popul_fit
@@ -199,7 +151,7 @@ class GA:
     def __make_mutation__(self, percent: float = 0.10):
         k = int(self.popul_size * percent)
         # mutação apenas nos filhos
-        
+
         change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
             # self.__swap_random__(self.children[i])
@@ -245,7 +197,7 @@ class GA:
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
-            self.__make_mutation__() # TODO mutar os filhos
+            # self.__make_mutation__() # TODO mutar os filhos
 
             self.generation += 1
 
@@ -255,8 +207,8 @@ class Individual:
         self.sol: Solution = sol
         self.fitness: float = fitness
 
+
 class Parent:
     def __init__(self, sol_a: Solution, sol_b: Solution):
         self.sol_a: Solution = sol_a
         self.sol_b: Solution = sol_b
-    
