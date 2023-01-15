@@ -89,13 +89,16 @@ class GA:
             sol_b.check_fact()
 
 
-    def __encoded__(self) -> Solution:
+    def __encoded__(self):
         
         m = self.inst.get_m()
         n = self.inst.get_n()
         
+        n_pairs = int(self.popul_size/2)
+        children: List[Solution] = list(np.ndarray(self.popul_size, dtype=Solution))
+        
         # iterar todos os casais
-        for p in range(int(self.popul_size/2)):
+        for p in range(n_pairs):
             # sequencia de jobs daquela solução
             jobs_pa_str = ""
             jobs_pb_str = ""
@@ -137,13 +140,14 @@ class GA:
             
             
             sol_a = Solution(self.inst)
-            # sol_b = Solution(inst) 
+            sol_b = Solution(self.inst) 
             
             sol_a.create_solution(jobs_pa, jobs_size_pa)
-
+            sol_b.create_solution(jobs_pb, jobs_size_pb)
+            children.append(sol_a)
+            children.append(sol_b)
         
-        
-        # return sol_a
+        self.children = children
         
     def __selection_parent__(self):
 
