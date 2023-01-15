@@ -26,4 +26,4 @@ if __name__ == "__main__":
     ga = GA(init_pop, inst)
 
     ga.next_generation(5)
-    # print("CMax Genético: ", ga.incum_sol.cmax)
+    print("CMax Genético: ", ga.incum_sol.cmax)

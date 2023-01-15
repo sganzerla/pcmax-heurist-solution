@@ -14,9 +14,13 @@ class GA:
         self.incum_sol: Solution = None
         self.inst = inst
 
+    def __start_population__(self):
+        if self.generation > 1:
+            self.popul = np.concatenate([self.popul, self.children], dtype=Solution, axis=0)
+
     def __calc_fitness__(self):
 
-
+        print(len(self.popul))
         pop_ranked = sorted(self.popul, key=lambda x: x.cmax)
 
         fitness = np.ndarray(self.popul_size, dtype=Individual)
@@ -36,74 +40,6 @@ class GA:
         # atualizando o valor da incumbente
         self.incum_sol = pop_ranked[0]
         self.popul_fit = fitness
-
-    def __crossover__(self):
-
-        m = self.inst.get_m()
-        n = self.inst.get_n()
-
-        n_pairs = int(self.popul_size / 2)
-        # TODO MELHORAR
-        children: List[Solution] = list(
-            np.ndarray(self.popul_size, dtype=Solution))
-
-        # iterar todos os casais
-        for p in range(n_pairs):
-            # sequencia de jobs daquela solução
-            jobs_pa_str = ""
-            jobs_pb_str = ""
-            # quantidade de jobs por maquina
-            jobs_size_pa = np.ndarray(m, dtype=int)
-            jobs_size_pb = np.ndarray(m, dtype=int)
-
-            for i in range(m):
-                # filhos vão herdar característica quant de jobs em cada máquina
-                jobs_size_pa[i] = self.parent[0][p].get_num_jobs_machine(i)
-                jobs_size_pb[i] = self.parent[1][p].get_num_jobs_machine(i)
-                # primeiro job do pai a
-                jm_a = self.parent[0][p].m[Node.Suc][n + i]
-                jm_b = self.parent[1][p].m[Node.Suc][n + i]
-
-                while jm_a < n:
-                    jobs_pa_str += f" {jm_a}"
-                    jm_a = self.parent[0][p].m[Node.Suc][jm_a]
-                while jm_b < n:
-                    jobs_pb_str += f" {jm_b}"
-                    jm_b = self.parent[1][p].m[Node.Suc][jm_b]
-
-            jobs_pa = np.asarray([int(i)
-                                 for i in jobs_pa_str.split() if i.isdigit()])
-            jobs_pb = np.asarray([int(i)
-                                 for i in jobs_pb_str.split() if i.isdigit()])
-            print("\n")
-            print("Pai_A:", jobs_pa)
-            print("Pai_B:", jobs_pb)
-            cut = random.randint(1, n-1)
-            print("cut: ", cut)
-            child1 = -np.ones(n, dtype=int)
-            child2 = -np.ones(n, dtype=int)
-
-            for k in range(n):
-                if k < cut:
-                    child1[k] = jobs_pa[k]
-                    child2[k] = jobs_pb[k]
-                else:
-                    child1[k] = jobs_pb[k]
-                    child2[k] = jobs_pa[k]
-            print("Chi_A:", child1)
-            print("Chi_B:", child2)
-            sol_a = Solution(self.inst)
-            sol_b = Solution(self.inst)
-
-            # TODO fazer reparação no dna antes de usar
-            # sol_a.create_solution(child1, jobs_size_pa)
-            # sol_b.create_solution(child2, jobs_size_pb)
-            sol_a.create_solution(jobs_pa, jobs_size_pa)
-            sol_b.create_solution(jobs_pb, jobs_size_pb)
-            children.append(sol_a)
-            children.append(sol_b)
-
-        self.children = children
 
     def __selection_parent__(self):
 
@@ -152,6 +88,67 @@ class GA:
         parent: List[List[Solution]] = [p1, p2]
         self.parent = parent
 
+    def __crossover__(self):
+
+        m = self.inst.get_m()
+        n = self.inst.get_n()
+
+        n_pairs = int(self.popul_size / 2)
+        children1 = np.ndarray(n_pairs, dtype=Solution)
+        children2 = np.ndarray(n_pairs, dtype=Solution)
+        # iterar todos os casais
+        for p in range(n_pairs):
+            # sequencia de jobs daquela solução
+            jobs_pa_str = ""
+            jobs_pb_str = ""
+            # quantidade de jobs por maquina
+            jobs_size_pa = np.ndarray(m, dtype=int)
+            jobs_size_pb = np.ndarray(m, dtype=int)
+
+            for i in range(m):
+                # filhos vão herdar característica quant de jobs em cada máquina
+                jobs_size_pa[i] = self.parent[0][p].get_num_jobs_machine(i)
+                jobs_size_pb[i] = self.parent[1][p].get_num_jobs_machine(i)
+                # primeiro job do pai a
+                jm_a = self.parent[0][p].m[Node.Suc][n + i]
+                jm_b = self.parent[1][p].m[Node.Suc][n + i]
+
+                while jm_a < n:
+                    jobs_pa_str += f" {jm_a}"
+                    jm_a = self.parent[0][p].m[Node.Suc][jm_a]
+                while jm_b < n:
+                    jobs_pb_str += f" {jm_b}"
+                    jm_b = self.parent[1][p].m[Node.Suc][jm_b]
+
+            jobs_pa = np.asarray([int(i)
+                                 for i in jobs_pa_str.split() if i.isdigit()])
+            jobs_pb = np.asarray([int(i)
+                                 for i in jobs_pb_str.split() if i.isdigit()])
+            cut = random.randint(1, n-1)
+            child1 = -np.ones(n, dtype=int)
+            child2 = -np.ones(n, dtype=int)
+
+            for k in range(n):
+                if k < cut:
+                    child1[k] = jobs_pa[k]
+                    child2[k] = jobs_pb[k]
+                else:
+                    child1[k] = jobs_pb[k]
+                    child2[k] = jobs_pa[k]
+            sol_a = Solution(self.inst)
+            sol_b = Solution(self.inst)
+
+            # TODO fazer reparação no dna antes de usar
+            # sol_a.create_solution(child1, jobs_size_pa)
+            # sol_b.create_solution(child2, jobs_size_pb)
+            sol_a.create_solution(jobs_pa, jobs_size_pa)
+            sol_b.create_solution(jobs_pb, jobs_size_pb)
+            children1[p] = sol_a
+            children2[p] = sol_b
+
+        self.children = np.concatenate(
+            [children1, children2], dtype=Solution, axis=0)
+
     def __make_mutation__(self, percent: float = 0.10):
         k = int(self.popul_size * percent)
 
@@ -196,6 +193,7 @@ class GA:
     def next_generation(self, n_generation: int):
 
         for _ in range(n_generation):
+            self.__start_population__()
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
