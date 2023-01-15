@@ -75,8 +75,11 @@ class GA:
                                  for i in jobs_pa_str.split() if i.isdigit()])
             jobs_pb = np.asarray([int(i)
                                  for i in jobs_pb_str.split() if i.isdigit()])
-
+            print("\n")
+            print("Pai_A:", jobs_pa)
+            print("Pai_B:", jobs_pb)
             cut = random.randint(1, n-1)
+            print("cut: ", cut)
             child1 = -np.ones(n, dtype=int)
             child2 = -np.ones(n, dtype=int)
 
@@ -87,7 +90,8 @@ class GA:
                 else:
                     child1[k] = jobs_pb[k]
                     child2[k] = jobs_pa[k]
-
+            print("Chi_A:", child1)
+            print("Chi_B:", child2)
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
@@ -150,12 +154,10 @@ class GA:
 
     def __make_mutation__(self, percent: float = 0.10):
         k = int(self.popul_size * percent)
-        # mutação apenas nos filhos
 
         change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
-            # self.__swap_random__(self.children[i])
-            self.__swap_random__(self.popul[i])
+            self.__swap_random__(self.children[i])
 
     @staticmethod
     def __swap_random__(solu: Solution):
