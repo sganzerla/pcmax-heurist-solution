@@ -20,26 +20,26 @@ class GA:
 
     def __calc_fitness__(self):
 
-        print(len(self.popul))
         pop_ranked = sorted(self.popul, key=lambda x: x.cmax)
-
+        pop_reduced = pop_ranked[:self.popul_size]
         fitness = np.ndarray(self.popul_size, dtype=Individual)
         total_fitness = 0
 
         # sum fitness total
         i = 0
         for i in range(self.popul_size):
-            total_fitness += 1 / pop_ranked[i].cmax
+            total_fitness += 1 / pop_reduced[i].cmax
 
         # fitness individual
         i = 0
         for i in range(self.popul_size):
-            fit = (1 / pop_ranked[i].cmax) / total_fitness
-            fitness[i] = Individual(pop_ranked[i], fit)
+            fit = (1 / pop_reduced[i].cmax) / total_fitness
+            fitness[i] = Individual(pop_reduced[i], fit)
 
         # atualizando o valor da incumbente
-        self.incum_sol = pop_ranked[0]
+        self.incum_sol = pop_reduced[0]
         self.popul_fit = fitness
+        self.popul =  pop_reduced
 
     def __selection_parent__(self):
 
