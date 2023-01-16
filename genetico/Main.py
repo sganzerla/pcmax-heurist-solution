@@ -25,5 +25,5 @@ if __name__ == "__main__":
     print("CMax Guloso: ", solu.cmax)
     ga = GA(init_pop, inst)
 
-    ga.next_generation(1)
+    ga.next_generation(20)
     print("CMax Genético: ", ga.incum_sol.cmax)

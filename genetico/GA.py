@@ -17,7 +17,8 @@ class GA:
     def __start_population__(self):
         if self.generation > 1:
             # junta a população original com a nova geração
-            self.popul = np.concatenate([self.popul, self.children], dtype=Solution, axis=0)
+            self.popul = np.concatenate(
+                [self.popul, self.children], dtype=Solution, axis=0)
 
     def __calc_fitness__(self):
 
@@ -40,7 +41,7 @@ class GA:
         # atualizando o valor da incumbente
         self.incum_sol = pop_reduced[0]
         self.popul_fit = fitness
-        self.popul =  pop_reduced
+        self.popul = pop_reduced
 
     def __selection_parent__(self):
 
@@ -130,20 +131,21 @@ class GA:
             child2 = -np.ones(n, dtype=int)
             print("\n")
             print(cut)
-            print("pai_a:", jobs_pa)
-            print("pai_b:", jobs_pb)
-            
+          
             # crossover
             childa = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
             childb = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
-            
+            print("pai_a:", jobs_pa)
             print("chi_a:", childa)
+            print("pai_b:", jobs_pb)
             print("chi_b:", childb)
-            
+            print("Reparação -------------------")
             # reparação
             childa, childb = self.repar_gene(childa, childb)
-            
-                  
+            print("pai_a:", jobs_pa)
+            print("chi_a:", childa)
+            print("pai_b:", jobs_pb)
+            print("chi_b:", childb)
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
@@ -157,14 +159,31 @@ class GA:
 
     def repar_gene(self, childa: np.ndarray, childb: np.ndarray):
 
-        visited = set()
-        dup = [x for x in childa if x in visited or (visited.add(x) or False)]
-    
-        print(dup)  # [1, 5, 1]
+        uniq_a, uniq_b = set(), set()
+        dup_a = [x for x in childa if x in uniq_a or (uniq_a.add(x) or False)]
+        dup_b = [x for x in childb if x in uniq_b or (uniq_b.add(x) or False)]
 
+        size = len(dup_b)
+        # separando os índices dos elementos repetidos
+        idx_dup_a = []
+        for i in range(size):
+            idx_dup_a.append(np.where(childa == dup_a[i])[0][0])
 
+        idx_dup_b = []
+        for i in range(size):
+            idx_dup_b.append(np.where(childb == dup_b[i])[0][0])
+        
+        
+        # substituindo os elementos repetidos
+        for i in range(size):
+            childa[idx_dup_a[i]] = dup_b[i]
+            childb[idx_dup_b[i]] = dup_a[i]
+        
+        print("dup_a:", dup_a, "idx_a:", idx_dup_a)
+        print("dup_b:", dup_b, "idx_b:", idx_dup_b)
+        
         return childa, childb
-    
+
     def __make_mutation__(self, percent: float = 0.10):
         k = int(self.popul_size * percent)
 
