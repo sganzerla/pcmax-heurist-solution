@@ -15,6 +15,7 @@ class GA:
         self.generation: int = 1
         self.incum_sol: Solution = None
         self.inst = inst
+        self.ls = LocalSearch(self.inst)
 
     def __start_population__(self):
         if self.generation > 1:
@@ -174,20 +175,20 @@ class GA:
         
         return childa, childb
 
-    def __make_mutation__(self, percent: float = 0.05):
+    def __make_mutation__(self, percent: float = 0.1):
         k = int(self.popul_size * percent)
-        ls = LocalSearch(self.inst)
+        
         change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
             sol = self.children[i] 
-            ls.swap(sol)
-            ls.insertion(sol)
-            for i in range(self.inst.get_m()):
-                ls.gen_insert(sol, i)
-            ls.swap(sol)
-            ls.insertion(sol)
-            for i in range(self.inst.get_m()):
-                ls.gen_insert(sol, i)
+            self.ls.swap(sol)
+            self.ls.insertion(sol)
+            # for i in range(self.inst.get_m()):
+            #     ls.gen_insert(sol, i)
+            # ls.swap(sol)
+            # ls.insertion(sol)
+            # for i in range(self.inst.get_m()):
+            #     ls.gen_insert(sol, i)
 
     def next_generation(self, n_generation: int):
 
