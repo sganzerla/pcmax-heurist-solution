@@ -28,12 +28,10 @@ class GA:
         total_fitness = 0
 
         # sum fitness total
-        i = 0
         for i in range(self.popul_size):
             total_fitness += 1 / pop_reduced[i].cmax
 
         # fitness individual
-        i = 0
         for i in range(self.popul_size):
             fit = (1 / pop_reduced[i].cmax) / total_fitness
             fitness[i] = Individual(pop_reduced[i], fit)
@@ -132,7 +130,7 @@ class GA:
             childa = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
             childb = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
             # reparação
-            child1, child2 = self.repar_gene(childa, childb)
+            child1, child2 = self.__repar_gene__(childa, childb)
 
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
@@ -145,8 +143,11 @@ class GA:
 
         self.children = np.concatenate([children1, children2], axis=0)
 
-    def repar_gene(self, childa: np.ndarray, childb: np.ndarray):
+    def __repar_gene__(self, childa: np.ndarray, childb: np.ndarray):
 
+
+        if len(childa) != len(childb):
+            print("diferentes", len(childa), childa, len(childb), childb)
         uniq_a, uniq_b = set(), set()
         dup_a = [x for x in childa if x in uniq_a or (uniq_a.add(x) or False)]
         dup_b = [x for x in childb if x in uniq_b or (uniq_b.add(x) or False)]
@@ -169,46 +170,32 @@ class GA:
         
         return childa, childb
 
-    def __make_mutation__(self, percent: float = 0.10):
+    def __make_mutation__(self, percent: float = 0.05):
         k = int(self.popul_size * percent)
 
         change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
-            self.__swap_random__(self.children[i])
+            sol = self.children[i] 
 
-    @staticmethod
-    def __swap_random__(solu: Solution):
+            idx_m = sol.get_makespan_idx()
+            jobs_m_str = ""
+            jm_a = sol.m[Node.Suc][sol.inst.get_n() + idx_m]
+            while jm_a < sol.inst.get_n():
+                jobs_m_str += f" {jm_a}"
+                jm_a = sol.m[Node.Suc][jm_a]
+                
+            jobs_m = [int(i) for i in jobs_m_str.split() if i.isdigit()]
 
-        idx_m = solu.get_makespan_idx()
-        jobs_make = GA.__get_jobs_by_machine__(solu, idx_m)
+            j1, j2 = random.sample(jobs_m, 2)
+            
+            prei = sol.get_pre(j1)
+            prej = sol.get_pre(j2)
+            sol.eject_job(idx_m, j1)
+            sol.eject_job(idx_m, j2)
+            sol.insert_job(idx_m, j2, prei)
+            sol.insert_job(idx_m, j1, prej)
+            sol.check_solution()
 
-        j1, j2 = 0, 0
-        while j1 == j2:
-            j1 = random.choice(jobs_make)
-            j2 = random.choice(jobs_make)
-
-        GA.__change_jobs__(solu, idx_m, j1, j2)
-
-    @staticmethod
-    def __change_jobs__(solu: Solution, idx_m: int, j1: int, j2: int):
-        pre_j1 = solu.get_pre(j1)
-        pre_j2 = solu.get_pre(j2)
-        solu.eject_job(idx_m, j1)
-        solu.eject_job(idx_m, j2)
-        solu.insert_job(idx_m, j2, pre_j1)
-        solu.insert_job(idx_m, j1, pre_j2)
-
-    @staticmethod
-    def __get_jobs_by_machine__(solu: Solution, idx_m: int):
-        first_job = solu.m[Node.Suc][solu.inst.get_n() + idx_m]
-        num_jobs_machine = solu.get_num_jobs_machine(idx_m)
-        jobs_make = np.ones(num_jobs_machine, dtype=int)
-        aux = 0
-        while first_job < solu.inst.get_n():
-            jobs_make[aux] = first_job
-            first_job = solu.m[Node.Suc][first_job]
-            aux += 1
-        return jobs_make
 
     def next_generation(self, n_generation: int):
 
@@ -217,7 +204,7 @@ class GA:
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
-            # self.__make_mutation__() # TODO mutar os filhos
+            self.__make_mutation__() # TODO mutar os filhos
 
             self.generation += 1
 
