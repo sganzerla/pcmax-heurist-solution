@@ -2,6 +2,8 @@ from Solution import *
 import random
 from typing import List
 
+from LocalSearch import *
+
 
 class GA:
     def __init__(self, init_popul: List[Solution], inst: Instance):
@@ -125,7 +127,8 @@ class GA:
             jobs_pb = np.asarray([int(i)
                                  for i in jobs_pb_str.split() if i.isdigit()])
             cut = random.randint(1, n-1)
-          
+
+            
             # crossover
             childa = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
             childb = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
@@ -148,6 +151,7 @@ class GA:
 
         if len(childa) != len(childb):
             print("diferentes", len(childa), childa, len(childb), childb)
+            
         uniq_a, uniq_b = set(), set()
         dup_a = [x for x in childa if x in uniq_a or (uniq_a.add(x) or False)]
         dup_b = [x for x in childb if x in uniq_b or (uniq_b.add(x) or False)]
@@ -172,30 +176,18 @@ class GA:
 
     def __make_mutation__(self, percent: float = 0.05):
         k = int(self.popul_size * percent)
-
+        ls = LocalSearch(self.inst)
         change_gene = random.choices(range(self.popul_size), k=k)
         for i in change_gene:
             sol = self.children[i] 
-
-            idx_m = sol.get_makespan_idx()
-            jobs_m_str = ""
-            jm_a = sol.m[Node.Suc][sol.inst.get_n() + idx_m]
-            while jm_a < sol.inst.get_n():
-                jobs_m_str += f" {jm_a}"
-                jm_a = sol.m[Node.Suc][jm_a]
-                
-            jobs_m = [int(i) for i in jobs_m_str.split() if i.isdigit()]
-
-            j1, j2 = random.sample(jobs_m, 2)
-            
-            prei = sol.get_pre(j1)
-            prej = sol.get_pre(j2)
-            sol.eject_job(idx_m, j1)
-            sol.eject_job(idx_m, j2)
-            sol.insert_job(idx_m, j2, prei)
-            sol.insert_job(idx_m, j1, prej)
-            sol.check_solution()
-
+            ls.swap(sol)
+            ls.insertion(sol)
+            for i in range(self.inst.get_m()):
+                ls.gen_insert(sol, i)
+            ls.swap(sol)
+            ls.insertion(sol)
+            for i in range(self.inst.get_m()):
+                ls.gen_insert(sol, i)
 
     def next_generation(self, n_generation: int):
 
