@@ -171,6 +171,42 @@ class GA:
         
         return chr_a, chr_b
 
+    def __encoded_by_machine__(self):
+        n = self.inst.get_n()
+        n_pairs = int(self.pop_size / 2)
+        for i in range(n_pairs):
+            jobs_pa = -np.ones(n, dtype=int)
+            jobs_pb = -np.ones(n, dtype=int)
+         
+            for j in range(n):
+                jobs_pa[j] = self.parent[0][i].get_job_machine(j)
+                jobs_pb[j] = self.parent[1][i].get_job_machine(j)
+          
+            # one point 
+            cut = random.randint(1, n-1)
+            
+            child_a = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
+            child_b = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
+            
+            # fix
+            child1 = self.__decoded_str_mach__(child_a)
+            # child2 = self.__decoded_str_mach__(child_b)
+
+            
+            
+  
+    def __decoded_str_mach__(self, child: np.ndarray):
+
+        jobs = np.ndarray(self.inst.get_m(), dtype=list)
+        for i in range(self.inst.get_m()):
+            v = [j for j in range(self.inst.get_n()) if child[j] == i]
+            # print(f"m{i}: jobs -> {v}")
+            jobs[i] = v
+        
+        # print(jobs)
+        # CRIAR METODO de avaliacao da melhor combinação de cada grupo de jobs
+        
+
     def __make_mutation__(self, percent: float = 0.1):
         k = int(self.pop_size * percent)
         
@@ -193,6 +229,7 @@ class GA:
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
+            # self.__encoded_by_machine__() TESTANDO OUTRO METODO
             self.__make_mutation__()
 
             self.generation += 1
