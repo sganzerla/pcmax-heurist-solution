@@ -21,9 +21,8 @@ if __name__ == "__main__":
     solu = Solution(inst)
     const_sol.build_greedy(solu)
     
-    init_pop[0] = solu
     print("CMax Guloso: ", solu.cmax)
     ga = GA(init_pop, inst)
 
-    ga.next_generation(20)
+    ga.next_generation(2)
     print("CMax Genético: ", ga.incum_sol.cmax)

@@ -127,31 +127,19 @@ class GA:
             jobs_pb = np.asarray([int(i)
                                  for i in jobs_pb_str.split() if i.isdigit()])
             cut = random.randint(1, n-1)
-            child1 = -np.ones(n, dtype=int)
-            child2 = -np.ones(n, dtype=int)
-            print("\n")
-            print(cut)
           
             # crossover
             childa = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
             childb = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
-            print("pai_a:", jobs_pa)
-            print("chi_a:", childa)
-            print("pai_b:", jobs_pb)
-            print("chi_b:", childb)
-            print("Reparação -------------------")
             # reparação
-            childa, childb = self.repar_gene(childa, childb)
-            print("pai_a:", jobs_pa)
-            print("chi_a:", childa)
-            print("pai_b:", jobs_pb)
-            print("chi_b:", childb)
+            child1, child2 = self.repar_gene(childa, childb)
+
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
-            # TODO fazer reparação no dna antes de usar
             sol_a.create_solution(child1, jobs_size_pa)
             sol_b.create_solution(child2, jobs_size_pb)
+            
             children1[p] = sol_a
             children2[p] = sol_b
 
@@ -165,22 +153,19 @@ class GA:
 
         size = len(dup_b)
         # separando os índices dos elementos repetidos
-        idx_dup_a = []
+        idx_dup_a = np.ndarray(size, dtype=int)
         for i in range(size):
-            idx_dup_a.append(np.where(childa == dup_a[i])[0][0])
+            idx_dup_a[i] = np.where(childa == dup_a[i])[0][0]
 
-        idx_dup_b = []
+        idx_dup_b = np.ndarray(size, dtype=int)
         for i in range(size):
-            idx_dup_b.append(np.where(childb == dup_b[i])[0][0])
-        
+            idx_dup_b[i] = np.where(childb == dup_b[i])[0][0]
+
         
         # substituindo os elementos repetidos
         for i in range(size):
             childa[idx_dup_a[i]] = dup_b[i]
             childb[idx_dup_b[i]] = dup_a[i]
-        
-        print("dup_a:", dup_a, "idx_a:", idx_dup_a)
-        print("dup_b:", dup_b, "idx_b:", idx_dup_b)
         
         return childa, childb
 
