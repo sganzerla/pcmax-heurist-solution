@@ -8,7 +8,7 @@ if __name__ == "__main__":
     
     inst = Instance(Extract(path))
 
-    pop_size = 150
+    pop_size = 200
     
     init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
     const_sol = ConstructiveSolution(inst)
@@ -18,12 +18,13 @@ if __name__ == "__main__":
         const_sol.build_naive(solu)
         init_pop[i] = solu
 
-    # testando a adição de uma solução gulosa
+   
+    ga = GA(init_pop, inst)
+    ga.next_generation(1000)
+    
+    
+     # testando a adição de uma solução gulosa
     solu = Solution(inst)
     const_sol.build_greedy(solu)
-    init_pop[0] = solu
-    ga = GA(init_pop, inst)
-
-    ga.next_generation(1000)
     print("CMax Guloso: ", solu.cmax)
     

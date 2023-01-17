@@ -229,8 +229,8 @@ class GA:
             self.ls.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     self.ls.gen_insert(sol, i)
-            # self.ls.swap(sol)
-            # self.ls.insertion(sol)
+            self.ls.swap(sol)
+            self.ls.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     ls.gen_insert(sol, i)
 
