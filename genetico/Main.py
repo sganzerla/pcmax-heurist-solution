@@ -3,8 +3,8 @@ from GA import *
 
 if __name__ == "__main__":
 
-    path = '001_struc_2_10_01'
-    # path = '006_struc_2_100_01'
+    # path = '001_struc_2_10_01'
+    path = '006_struc_2_100_01'
     
     inst = Instance(Extract(path))
 
@@ -24,7 +24,8 @@ if __name__ == "__main__":
     init_pop[0] = solu
     ga = GA(init_pop, inst)
 
-    ga.next_generation(200)
-    print("CMax Genético: ", ga.inc_sol.cmax)
+    ga.next_generation(100)
     print("CMax Guloso: ", solu.cmax)
+    print("CMax Genético: ", ga.inc_sol.cmax)
+    print(f"População Inicial:{pop_size} | Gerações: {ga.generation -1}")
     
