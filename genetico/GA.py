@@ -161,14 +161,11 @@ class GA:
         dup_b = [x for x in chr_b if x in uniq_b or (uniq_b.add(x) or False)]
 
         size = len(dup_b)
-        # idx jobs dup A
+        # idx jobs dup A|B
         idx_dup_a = np.ndarray(size, dtype=int)
-        for i in range(size):
-            idx_dup_a[i] = np.where(chr_a == dup_a[i])[0][0]
-
-        # idx jobs dup B
         idx_dup_b = np.ndarray(size, dtype=int)
         for i in range(size):
+            idx_dup_a[i] = np.where(chr_a == dup_a[i])[0][0]
             idx_dup_b[i] = np.where(chr_b == dup_b[i])[0][0]
 
         # subs jobs dup
