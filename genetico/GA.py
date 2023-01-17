@@ -198,9 +198,16 @@ class GA:
             child_a = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
             child_b = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
             
-            # fix
-            child1 = self.__decoded_str_mach__(child_a)
-            child2 = self.__decoded_str_mach__(child_b)
+            # sep list jobs por maq
+            child1 = np.ndarray(self.inst.get_m(), dtype=list)
+            child2 = np.ndarray(self.inst.get_m(), dtype=list)
+            for k in range(self.inst.get_m()):
+                va = [j for j in range(self.inst.get_n()) if child_a[j] == k]
+                vb = [j for j in range(self.inst.get_n()) if child_b[j] == k]
+                random.shuffle(va)
+                random.shuffle(vb)
+                child1[k] = va
+                child2[k] = vb
 
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
@@ -213,17 +220,7 @@ class GA:
 
         self.children = np.concatenate([children1, children2], axis=0)
 
-    def __decoded_str_mach__(self, child: np.ndarray) -> np.ndarray:
-
-        jobs = np.ndarray(self.inst.get_m(), dtype=list)
-        for i in range(self.inst.get_m()):
-            v = [j for j in range(self.inst.get_n()) if child[j] == i]
-            random.shuffle(v)
-            jobs[i] = v
-        
-        return jobs
-        
-    def __make_mutation__(self, percent: float = 0.2):
+    def __make_mutation__(self, percent: float = 0.1):
         k = int(self.pop_size * percent)
         
         change_gene = random.choices(range(self.pop_size), k=k)
@@ -245,7 +242,7 @@ class GA:
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
-            self.__make_mutation__()
+            # self.__make_mutation__()
 
             self.generation += 1
             print(self.generation, self.inc_sol.cmax)
