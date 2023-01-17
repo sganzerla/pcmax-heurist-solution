@@ -92,6 +92,13 @@ class GA:
         self.parent = parent
 
     def __crossover__(self):
+        
+        if self.generation % 2 == 0:
+            self.__encoded_by_job__()
+        else:
+            self.__encoded_by_machine__()
+
+    def __encoded_by_job__(self):
 
         m = self.inst.get_m()
         n = self.inst.get_n()
@@ -138,8 +145,8 @@ class GA:
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
-            sol_a.create_solution(child1, jobs_size_pa)
-            sol_b.create_solution(child2, jobs_size_pb)
+            sol_a.create_sol_strat_a(child1, jobs_size_pa)
+            sol_b.create_sol_strat_a(child2, jobs_size_pb)
             
             children1[p] = sol_a
             children2[p] = sol_b
@@ -172,8 +179,11 @@ class GA:
         return chr_a, chr_b
 
     def __encoded_by_machine__(self):
+        
         n = self.inst.get_n()
         n_pairs = int(self.pop_size / 2)
+        children1 = np.ndarray(n_pairs, dtype=Solution)
+        children2 = np.ndarray(n_pairs, dtype=Solution)
         for i in range(n_pairs):
             jobs_pa = -np.ones(n, dtype=int)
             jobs_pb = -np.ones(n, dtype=int)
@@ -190,24 +200,30 @@ class GA:
             
             # fix
             child1 = self.__decoded_str_mach__(child_a)
-            # child2 = self.__decoded_str_mach__(child_b)
+            child2 = self.__decoded_str_mach__(child_b)
 
+            sol_a = Solution(self.inst)
+            sol_b = Solution(self.inst)
+
+            sol_a.create_sol_strat_b(child1)
+            sol_b.create_sol_strat_b(child2)
             
-            
-  
-    def __decoded_str_mach__(self, child: np.ndarray):
+            children1[i] = sol_a
+            children2[i] = sol_b
+
+        self.children = np.concatenate([children1, children2], axis=0)
+
+    def __decoded_str_mach__(self, child: np.ndarray) -> np.ndarray:
 
         jobs = np.ndarray(self.inst.get_m(), dtype=list)
         for i in range(self.inst.get_m()):
             v = [j for j in range(self.inst.get_n()) if child[j] == i]
-            # print(f"m{i}: jobs -> {v}")
+            random.shuffle(v)
             jobs[i] = v
         
-        # print(jobs)
-        # CRIAR METODO de avaliacao da melhor combinação de cada grupo de jobs
+        return jobs
         
-
-    def __make_mutation__(self, percent: float = 0.1):
+    def __make_mutation__(self, percent: float = 0.2):
         k = int(self.pop_size * percent)
         
         change_gene = random.choices(range(self.pop_size), k=k)
@@ -217,22 +233,22 @@ class GA:
             self.ls.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     ls.gen_insert(sol, i)
-            # ls.swap(sol)
-            # ls.insertion(sol)
+            # self.ls.swap(sol)
+            # self.ls.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     ls.gen_insert(sol, i)
 
     def next_generation(self, n_generation: int):
 
-        for _ in range(n_generation):
+        for i in range(n_generation):
             self.__start_population__()
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
-            # self.__encoded_by_machine__() TESTANDO OUTRO METODO
             self.__make_mutation__()
 
             self.generation += 1
+            print(self.generation, self.inc_sol.cmax)
 
 
 class Individual:
