@@ -93,10 +93,10 @@ class GA:
 
     def __crossover__(self):
         
-        if self.generation % 2 == 0:
+        # if self.generation % 2 == 0:
             self.__encoded_by_job__()
-        else:
-            self.__encoded_by_machine__()
+        # else:
+            # self.__encoded_by_machine__()
 
     def __encoded_by_job__(self):
 
@@ -221,13 +221,14 @@ class GA:
     def __make_mutation__(self, percent: float = 0.1):
         k = int(self.pop_size * percent)
         
-        change_gene = random.choices(range(self.pop_size), k=k)
-        for i in change_gene:
+        # change_gene = random.choices(range(self.pop_size), k=k)
+        # mutação nos filhos do melhor casal
+        for i in [0, int(self.pop_size/2)]:
             sol = self.children[i] 
             self.ls.swap(sol)
             self.ls.insertion(sol)
             # for i in range(self.inst.get_m()):
-            #     ls.gen_insert(sol, i)
+            #     self.ls.gen_insert(sol, i)
             # self.ls.swap(sol)
             # self.ls.insertion(sol)
             # for i in range(self.inst.get_m()):
@@ -240,10 +241,19 @@ class GA:
             self.__calc_fitness__()
             self.__selection_parent__()
             self.__crossover__()
-            # self.__make_mutation__()
+            self.__make_mutation__()
 
             self.generation += 1
-            print(self.generation, self.inc_sol.cmax)
+            pop = np.ndarray(self.pop_size, dtype=int)    
+            for i in range(self.pop_size):
+                pop[i] = self.pop[i].cmax
+                
+            std = np.std(pop)
+            mean = np.mean(pop)
+            var = np.var(pop)
+            print(f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | med: {mean:.2f} | var: {var:.2f} | std: {std:.2f}")
+            if var < 1:
+                break
 
 
 class Individual:
