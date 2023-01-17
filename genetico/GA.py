@@ -218,12 +218,9 @@ class GA:
 
         self.children = np.concatenate([children1, children2], axis=0)
 
-    def __make_mutation__(self, percent: float = 0.1):
-        k = int(self.pop_size * percent)
+    def __make_mutation__(self):
         
-        # change_gene = random.choices(range(self.pop_size), k=k)
-        # mutação nos filhos do melhor casal
-        for i in [0, int(self.pop_size/2)]:
+        for i in [0, int(self.pop_size * 0.25) - 1, int(self.pop_size * 0.5) - 1]:
             sol = self.children[i] 
             self.ls.swap(sol)
             self.ls.insertion(sol)
@@ -249,9 +246,8 @@ class GA:
                 pop[i] = self.pop[i].cmax
                 
             std = np.std(pop)
-            mean = np.mean(pop)
             var = np.var(pop)
-            print(f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | med: {mean:.2f} | var: {var:.2f} | std: {std:.2f}")
+            print(f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | var: {var:.2f} | std: {std:.2f}")
             if var < 1:
                 break
 
