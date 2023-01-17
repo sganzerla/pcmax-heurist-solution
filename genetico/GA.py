@@ -133,12 +133,13 @@ class GA:
                                  for i in jobs_pa_str.split() if i.isdigit()])
             jobs_pb = np.asarray([int(i)
                                  for i in jobs_pb_str.split() if i.isdigit()])
-            cut = random.randint(1, n-1)
+            cut_l = random.randint(1, int(n /2))
+            cut_r = random.randint(int(n /2), n-1)
 
-            # crossover
-            child_a = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
-            child_b = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
-
+            # crossover ABA == BAB
+            child_a = np.concatenate([jobs_pa[:cut_l], jobs_pb[cut_l:cut_r], jobs_pa[cut_r:]], axis=0)
+            child_b = np.concatenate([jobs_pb[:cut_l], jobs_pa[cut_l:cut_r], jobs_pb[cut_r:]], axis=0)
+            
             # fix
             child1, child2 = self.__fix_chrom__(child_a, child_b)
 
