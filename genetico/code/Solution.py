@@ -2,6 +2,7 @@ from enum import IntEnum
 
 from code.Instance import *
 
+
 class Node(IntEnum):
     Pre = 0
     Suc = 1
@@ -86,7 +87,7 @@ class Solution:
             self.cmax = self.c[self.cmax_idx]
 
     # fecha o arco
-    def patch(self, pre: int, suc: int): 
+    def patch(self, pre: int, suc: int):
         if self.get_job_machine(pre) != self.get_job_machine(suc):
             print("erro, as tarefas devem ser da mesma maquina")
             return
@@ -102,16 +103,6 @@ class Solution:
         if self.c[m] != self.cmax:
             self.cmax_idx = np.argmax(self.c)
             self.cmax = self.c[self.cmax_idx]
-
-    def create_sol_strat_b(self, jobs: np.ndarray):
-        j_aux = 0
-        for m in range(self.inst.get_m()):
-            pre = self.inst.get_n() + m
-            for j in jobs[m]:
-                job = j
-                self.insert_job(m, job, pre)
-                pre = job
-                j_aux += 1
 
     def insert_job(self, m: int, job: int, pre: int):
         suc = self.m[Node.Suc][pre]

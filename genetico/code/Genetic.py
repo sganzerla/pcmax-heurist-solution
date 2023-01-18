@@ -101,7 +101,7 @@ class Genetic:
         # if self.generation % 2 == 0:
             self.__encoded_by_job__()
         # else:
-            # self.__encoded_by_machine__()
+            self.__encoded_by_machine__()
 
     def __encoded_by_job__(self):
 
@@ -151,8 +151,8 @@ class Genetic:
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
-            self.constr.build_like(sol_a, child1, jobs_size_pa)
-            self.constr.build_like(sol_b, child2, jobs_size_pb)
+            self.constr.build_like_a(sol_a, child1, jobs_size_pa)
+            self.constr.build_like_a(sol_b, child2, jobs_size_pb)
             
             children1[p] = sol_a
             children2[p] = sol_b
@@ -204,6 +204,7 @@ class Genetic:
             # sep list jobs por maq
             child1 = np.ndarray(self.inst.get_m(), dtype=list)
             child2 = np.ndarray(self.inst.get_m(), dtype=list)
+            
             for k in range(self.inst.get_m()):
                 va = [j for j in range(self.inst.get_n()) if child_a[j] == k]
                 vb = [j for j in range(self.inst.get_n()) if child_b[j] == k]
@@ -215,8 +216,8 @@ class Genetic:
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
-            sol_a.create_sol_strat_b(child1)
-            sol_b.create_sol_strat_b(child2)
+            self.constr.build_like_b(sol_a, child1)
+            self.constr.build_like_b(sol_b, child2)
             
             children1[i] = sol_a
             children2[i] = sol_b
