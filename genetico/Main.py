@@ -15,13 +15,13 @@ if __name__ == "__main__":
     
     if path is None:
         # path = '../instance/001_struc_2_10_01'
-        path = '../instance/002_struc_2_10_02'
-        # path = '../instance/006_struc_2_100_01'
+        # path = '../instance/002_struc_2_10_02'
+        path = '../instance/006_struc_2_100_01'
 
 
     inst = Instance(Extract(os.path.join(path)))
 
-    pop_size = 10
+    pop_size = 30
     
     init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
     const_sol = Constructive(inst)
@@ -32,11 +32,13 @@ if __name__ == "__main__":
         init_pop[i] = solu
 
    
-    ga = Genetic(init_pop, inst)
-    ga.next_generation(10)
-    
-    
     solu = Solution(inst)
     const_sol.build_greedy(solu)
+    init_pop[0] = solu
+    ga = Genetic(init_pop, inst)
+    ga.next_generation(30)
     print("CMax Guloso: ", solu.cmax)
+    
+    
+
     
