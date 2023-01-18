@@ -101,18 +101,18 @@ class Genetic:
         # if self.generation % 2 == 0:
         self.__encoded_by_job__()
         # else:
-        self.__encoded_by_machine__()
+        # self.__encoded_by_machine__()
 
     def __encoded_by_job__(self):
 
         m = self.__inst.get_m()
         n = self.__inst.get_n()
 
-        n_pairs = int(self.__pop_size / 2)
-        children1 = np.ndarray(n_pairs, dtype=Solution)
-        children2 = np.ndarray(n_pairs, dtype=Solution)
+        pair_size = int(self.__pop_size / 2)
+        nursery_a = np.ndarray(pair_size, dtype=Solution)
+        nursery_b = np.ndarray(pair_size, dtype=Solution)
 
-        for p in range(n_pairs):
+        for p in range(pair_size):
             # jobs da maquina
             jobs_pa_str = ""
             jobs_pb_str = ""
@@ -124,45 +124,43 @@ class Genetic:
                 jobs_size_pa[i] = self.__parent[0][p].get_num_jobs_machine(i)
                 jobs_size_pb[i] = self.__parent[1][p].get_num_jobs_machine(i)
 
-                jm_a = self.__parent[0][p].m[Node.Suc][n + i]
-                jm_b = self.__parent[1][p].m[Node.Suc][n + i]
+                # 1º job mach
+                job_a = self.__parent[0][p].m[Node.Suc][n + i]
+                job_b = self.__parent[1][p].m[Node.Suc][n + i]
 
-                while jm_a < n:
-                    jobs_pa_str += f" {jm_a}"
-                    jm_a = self.__parent[0][p].m[Node.Suc][jm_a]
-                while jm_b < n:
-                    jobs_pb_str += f" {jm_b}"
-                    jm_b = self.__parent[1][p].m[Node.Suc][jm_b]
+                while job_a < n:
+                    jobs_pa_str += f" {job_a}"
+                    job_a = self.__parent[0][p].m[Node.Suc][job_a]
+                while job_b < n:
+                    jobs_pb_str += f" {job_b}"
+                    job_b = self.__parent[1][p].m[Node.Suc][job_b]
 
-            jobs_pa = np.asarray([int(i)
+            chrom_pa = np.asarray([int(i)
                                  for i in jobs_pa_str.split() if i.isdigit()])
-            jobs_pb = np.asarray([int(i)
+            chrom_pb = np.asarray([int(i)
                                  for i in jobs_pb_str.split() if i.isdigit()])
-            cut_l = random.randint(1, int(n / 2))
-            cut_r = random.randint(int(n / 2), n-1)
+            cut = random.randint(1, n -1)
 
-            # crossover ABA == BAB
-            child_a = np.concatenate(
-                [jobs_pa[:cut_l], jobs_pb[cut_l:cut_r], jobs_pa[cut_r:]], axis=0)
-            child_b = np.concatenate(
-                [jobs_pb[:cut_l], jobs_pa[cut_l:cut_r], jobs_pb[cut_r:]], axis=0)
 
+            chrom_ch_a = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
+            chrom_ch_b = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
+            
             # fix
-            child1, child2 = self.__fix_chrom__(child_a, child_b)
+            child_a, child_b = self.__fix_chrom__(chrom_ch_a, chrom_ch_b)
 
             sol_a = Solution(self.__inst)
             sol_b = Solution(self.__inst)
 
-            self.__constr.build_like_a(sol_a, child1, jobs_size_pa)
-            self.__constr.build_like_a(sol_b, child2, jobs_size_pb)
+            self.__constr.build_like_a(sol_a, child_a, jobs_size_pa)
+            self.__constr.build_like_a(sol_b, child_b, jobs_size_pb)
 
-            children1[p] = sol_a
-            children2[p] = sol_b
+            nursery_a[p] = sol_a
+            nursery_b[p] = sol_b
 
-        self.__children = np.concatenate([children1, children2], axis=0)
+        self.__children = np.concatenate([nursery_a, nursery_b], axis=0)
 
     @staticmethod
-    def __fix_chrom__(chr_a: np.ndarray, chr_b: np.ndarray):
+    def __fix_chrom__(chr_a: np.ndarray, chr_b: np.ndarray) -> tuple:
 
         uniq_a, uniq_b = set(), set()
         dup_a = [x for x in chr_a if x in uniq_a or (uniq_a.add(x) or False)]
@@ -186,10 +184,10 @@ class Genetic:
     def __encoded_by_machine__(self):
 
         n = self.__inst.get_n()
-        n_pairs = int(self.__pop_size / 2)
-        children1 = np.ndarray(n_pairs, dtype=Solution)
-        children2 = np.ndarray(n_pairs, dtype=Solution)
-        for i in range(n_pairs):
+        pair_size = int(self.__pop_size / 2)
+        nursery_a = np.ndarray(pair_size, dtype=Solution)
+        nursery_b = np.ndarray(pair_size, dtype=Solution)
+        for i in range(pair_size):
             jobs_pa = -np.ones(n, dtype=int)
             jobs_pb = -np.ones(n, dtype=int)
 
@@ -221,10 +219,10 @@ class Genetic:
             self.__constr.build_like_b(sol_a, child1)
             self.__constr.build_like_b(sol_b, child2)
 
-            children1[i] = sol_a
-            children2[i] = sol_b
+            nursery_a[i] = sol_a
+            nursery_b[i] = sol_b
 
-        self.__children = np.concatenate([children1, children2], axis=0)
+        self.__children = np.concatenate([nursery_a, nursery_b], axis=0)
 
     def __make_mutation__(self):
 

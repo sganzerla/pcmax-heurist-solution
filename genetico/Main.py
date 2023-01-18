@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     inst = Instance(Extract(os.path.join(path)))
 
-    pop_size = 50
+    pop_size = 100
     
     init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
     const_sol = Constructive(inst)
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
    
     ga = Genetic(init_pop, inst)
-    ga.next_generation(100)
+    ga.next_generation(500)
     
     
     solu = Solution(inst)
