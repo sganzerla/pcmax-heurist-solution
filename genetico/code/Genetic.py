@@ -142,17 +142,17 @@ class Genetic:
             cut = random.randint(1, n -1)
 
 
-            chrom_ch_a = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
-            chrom_ch_b = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
+            chrom_ca = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
+            chrom_cb = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
             
             # fix
-            child_a, child_b = self.__fix_chrom__(chrom_ch_a, chrom_ch_b)
+            chrom_a, chrom_b = self.__fix_chrom__(chrom_ca, chrom_cb)
 
             sol_a = Solution(self.__inst)
             sol_b = Solution(self.__inst)
 
-            self.__constr.build_like_a(sol_a, child_a, jobs_size_pa)
-            self.__constr.build_like_a(sol_b, child_b, jobs_size_pb)
+            self.__constr.build_like_a(sol_a, chrom_a, jobs_size_pa)
+            self.__constr.build_like_a(sol_b, chrom_b, jobs_size_pb)
 
             nursery_a[p] = sol_a
             nursery_b[p] = sol_b
@@ -188,36 +188,37 @@ class Genetic:
         nursery_a = np.ndarray(pair_size, dtype=Solution)
         nursery_b = np.ndarray(pair_size, dtype=Solution)
         for i in range(pair_size):
-            jobs_pa = -np.ones(n, dtype=int)
-            jobs_pb = -np.ones(n, dtype=int)
+            chrom_pa = -np.ones(n, dtype=int)
+            chrom_pb = -np.ones(n, dtype=int)
 
             for j in range(n):
-                jobs_pa[j] = self.__parent[0][i].get_job_machine(j)
-                jobs_pb[j] = self.__parent[1][i].get_job_machine(j)
+                chrom_pa[j] = self.__parent[0][i].get_job_machine(j)
+                chrom_pb[j] = self.__parent[1][i].get_job_machine(j)
 
             # one point
             cut = random.randint(1, n-1)
 
-            child_a = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
-            child_b = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
+            chrom_ca = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
+            chrom_cb = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
 
             # sep list jobs por maq
-            child1 = np.ndarray(self.__inst.get_m(), dtype=list)
-            child2 = np.ndarray(self.__inst.get_m(), dtype=list)
+            chrom_a = np.ndarray(self.__inst.get_m(), dtype=list)
+            chrom_b = np.ndarray(self.__inst.get_m(), dtype=list)
 
             for k in range(self.__inst.get_m()):
-                va = [j for j in range(self.__inst.get_n()) if child_a[j] == k]
-                vb = [j for j in range(self.__inst.get_n()) if child_b[j] == k]
-                random.shuffle(va)
-                random.shuffle(vb)
-                child1[k] = va
-                child2[k] = vb
+                a = [j for j in range(self.__inst.get_n()) if chrom_ca[j] == k]
+                b = [j for j in range(self.__inst.get_n()) if chrom_cb[j] == k]
+                # TODO criar método para escolher melhor posição de cada tarefa dentro 
+                random.shuffle(a)
+                random.shuffle(b)
+                chrom_a[k] = a
+                chrom_b[k] = b
 
             sol_a = Solution(self.__inst)
             sol_b = Solution(self.__inst)
 
-            self.__constr.build_like_b(sol_a, child1)
-            self.__constr.build_like_b(sol_b, child2)
+            self.__constr.build_like_b(sol_a, chrom_a)
+            self.__constr.build_like_b(sol_b, chrom_b)
 
             nursery_a[i] = sol_a
             nursery_b[i] = sol_b
