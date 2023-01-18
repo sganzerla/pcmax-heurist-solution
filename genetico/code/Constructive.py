@@ -1,7 +1,5 @@
 import sys
 import random
-from typing import List
-
 from code.Solution import *
 
 
@@ -31,10 +29,13 @@ class Constructive:
                 m, jobs[i], sol.get_pre(self.__inst.get_n() + m))
 
     def build_best(self, sol: Solution, i_jobs: np.ndarray):
-
         self.__build_jobs__(sol, i_jobs)
 
-    def __build_jobs__(self, sol, i_jobs):
+    def build_greedy(self, sol: Solution):
+        i_jobs = self.__inst.get_p_copy().argsort()[::-1]
+        self.__build_jobs__(sol, i_jobs)
+
+    def __build_jobs__(self, sol: Solution, i_jobs):
         for i in i_jobs:
             best_delta = sys.maxsize
             best_move = [-1, -1]
@@ -67,9 +68,3 @@ class Constructive:
                         best_move = [j, job]
 
             sol.insert_job(best_move[0], i, best_move[1])
-
-
-    def build_greedy(self, sol: Solution):
-        i_jobs = self.__inst.get_p_copy().argsort()[::-1]
-
-        self.__build_jobs__(sol, i_jobs)
