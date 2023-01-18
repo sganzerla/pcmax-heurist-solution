@@ -11,52 +11,52 @@ from code.Constructive import *
 
 class Genetic:
     def __init__(self, init_pop: List[Solution], inst: Instance):
-        self.pop_size: int = len(init_pop)
-        self.pop: List[Solution] = init_pop
-        self.fit_pop: List[Individual]
-        self.parent: List[List[Solution]]
-        self.children: List[Solution]
-        self.generation: int = 1
+        self.__pop_size: int = len(init_pop)
+        self.__pop: List[Solution] = init_pop
+        self.__fit_pop: List[Individual]
+        self.__parent: List[List[Solution]]
+        self.__children: List[Solution]
+        self.__inst = inst
+        self.__neighbor = Neighborhood(self.__inst)
+        self.__constr = Constructive(self.__inst)
         self.inc_sol: Solution
-        self.inst = inst
-        self.neighbor = Neighborhood(self.inst)
-        self.constr = Constructive(self.inst)
+        self.generation: int = 1
 
     def __start_population__(self):
         if self.generation > 1:
             # junta pop original com nova
-            self.pop = np.concatenate(
-                [self.pop, self.children], dtype=Solution, axis=0)
+            self.__pop = np.concatenate(
+                [self.__pop, self.__children], dtype=Solution, axis=0)
 
     def __calc_fitness__(self):
 
-        pop_ranked = sorted(self.pop, key=lambda x: x.cmax)
-        pop_reduced = pop_ranked[:self.pop_size]
-        fitness = np.ndarray(self.pop_size, dtype=Individual)
+        pop_ranked = sorted(self.__pop, key=lambda x: x.cmax)
+        pop_reduced = pop_ranked[:self.__pop_size]
+        fitness = np.ndarray(self.__pop_size, dtype=Individual)
         total_fitness = 0
 
         # sum fitness total
-        for i in range(self.pop_size):
+        for i in range(self.__pop_size):
             total_fitness += 1 / pop_reduced[i].cmax
 
         # fitness individual
-        for i in range(self.pop_size):
+        for i in range(self.__pop_size):
             fit = (1 / pop_reduced[i].cmax) / total_fitness
             fitness[i] = Individual(pop_reduced[i], fit)
 
         # sol inc
         self.inc_sol = pop_reduced[0]
-        self.fit_pop = fitness
-        self.pop = pop_reduced
+        self.__fit_pop = fitness
+        self.__pop = pop_reduced
 
     def __selection_parent__(self):
 
-        fit_pop: List[Individual] = self.fit_pop
+        fit_pop: List[Individual] = self.__fit_pop
 
-        idx_g5 = int(self.pop_size * 0.80)
-        idx_g4 = int(self.pop_size * 0.60)
-        idx_g3 = int(self.pop_size * 0.40)
-        idx_g2 = int(self.pop_size * 0.20)
+        idx_g5 = int(self.__pop_size * 0.80)
+        idx_g4 = int(self.__pop_size * 0.60)
+        idx_g3 = int(self.__pop_size * 0.40)
+        idx_g2 = int(self.__pop_size * 0.20)
         idx_g1 = 0
         fit_sum_group = np.zeros(5, dtype=float)
         for i in range(idx_g1, idx_g2):
@@ -71,8 +71,8 @@ class Genetic:
             i5 = i + idx_g5
             fit_sum_group[4] += fit_pop[i5].fitness
 
-        weights = np.zeros(self.pop_size, dtype=float)
-        population = np.ones(self.pop_size, dtype=Solution)
+        weights = np.zeros(self.__pop_size, dtype=float)
+        population = np.ones(self.__pop_size, dtype=Solution)
         for i in range(idx_g1, idx_g2):
             i1 = i + idx_g1
             weights[i1] = fit_sum_group[0]
@@ -90,25 +90,25 @@ class Genetic:
             weights[i5] = fit_sum_group[4]
             population[i5] = fit_pop[i5].sol
 
-        parent_size = int(self.pop_size / 2)
+        parent_size = int(self.__pop_size / 2)
         p1 = random.choices(population, weights=weights, k=parent_size)
         p2 = random.choices(population, weights=weights, k=parent_size)
         parent: List[List[Solution]] = [p1, p2]
-        self.parent = parent
+        self.__parent = parent
 
     def __crossover__(self):
-        
+
         # if self.generation % 2 == 0:
-            self.__encoded_by_job__()
+        self.__encoded_by_job__()
         # else:
-            self.__encoded_by_machine__()
+        self.__encoded_by_machine__()
 
     def __encoded_by_job__(self):
 
-        m = self.inst.get_m()
-        n = self.inst.get_n()
+        m = self.__inst.get_m()
+        n = self.__inst.get_n()
 
-        n_pairs = int(self.pop_size / 2)
+        n_pairs = int(self.__pop_size / 2)
         children1 = np.ndarray(n_pairs, dtype=Solution)
         children2 = np.ndarray(n_pairs, dtype=Solution)
 
@@ -121,43 +121,45 @@ class Genetic:
             jobs_size_pb = np.ndarray(m, dtype=int)
 
             for i in range(m):
-                jobs_size_pa[i] = self.parent[0][p].get_num_jobs_machine(i)
-                jobs_size_pb[i] = self.parent[1][p].get_num_jobs_machine(i)
+                jobs_size_pa[i] = self.__parent[0][p].get_num_jobs_machine(i)
+                jobs_size_pb[i] = self.__parent[1][p].get_num_jobs_machine(i)
 
-                jm_a = self.parent[0][p].m[Node.Suc][n + i]
-                jm_b = self.parent[1][p].m[Node.Suc][n + i]
+                jm_a = self.__parent[0][p].m[Node.Suc][n + i]
+                jm_b = self.__parent[1][p].m[Node.Suc][n + i]
 
                 while jm_a < n:
                     jobs_pa_str += f" {jm_a}"
-                    jm_a = self.parent[0][p].m[Node.Suc][jm_a]
+                    jm_a = self.__parent[0][p].m[Node.Suc][jm_a]
                 while jm_b < n:
                     jobs_pb_str += f" {jm_b}"
-                    jm_b = self.parent[1][p].m[Node.Suc][jm_b]
+                    jm_b = self.__parent[1][p].m[Node.Suc][jm_b]
 
             jobs_pa = np.asarray([int(i)
                                  for i in jobs_pa_str.split() if i.isdigit()])
             jobs_pb = np.asarray([int(i)
                                  for i in jobs_pb_str.split() if i.isdigit()])
-            cut_l = random.randint(1, int(n /2))
-            cut_r = random.randint(int(n /2), n-1)
+            cut_l = random.randint(1, int(n / 2))
+            cut_r = random.randint(int(n / 2), n-1)
 
             # crossover ABA == BAB
-            child_a = np.concatenate([jobs_pa[:cut_l], jobs_pb[cut_l:cut_r], jobs_pa[cut_r:]], axis=0)
-            child_b = np.concatenate([jobs_pb[:cut_l], jobs_pa[cut_l:cut_r], jobs_pb[cut_r:]], axis=0)
-            
+            child_a = np.concatenate(
+                [jobs_pa[:cut_l], jobs_pb[cut_l:cut_r], jobs_pa[cut_r:]], axis=0)
+            child_b = np.concatenate(
+                [jobs_pb[:cut_l], jobs_pa[cut_l:cut_r], jobs_pb[cut_r:]], axis=0)
+
             # fix
             child1, child2 = self.__fix_chrom__(child_a, child_b)
 
-            sol_a = Solution(self.inst)
-            sol_b = Solution(self.inst)
+            sol_a = Solution(self.__inst)
+            sol_b = Solution(self.__inst)
 
-            self.constr.build_like_a(sol_a, child1, jobs_size_pa)
-            self.constr.build_like_a(sol_b, child2, jobs_size_pb)
-            
+            self.__constr.build_like_a(sol_a, child1, jobs_size_pa)
+            self.__constr.build_like_a(sol_b, child2, jobs_size_pb)
+
             children1[p] = sol_a
             children2[p] = sol_b
 
-        self.children = np.concatenate([children1, children2], axis=0)
+        self.__children = np.concatenate([children1, children2], axis=0)
 
     @staticmethod
     def __fix_chrom__(chr_a: np.ndarray, chr_b: np.ndarray):
@@ -178,62 +180,62 @@ class Genetic:
         for i in range(size):
             chr_a[idx_dup_a[i]] = dup_b[i]
             chr_b[idx_dup_b[i]] = dup_a[i]
-        
+
         return chr_a, chr_b
 
     def __encoded_by_machine__(self):
-        
-        n = self.inst.get_n()
-        n_pairs = int(self.pop_size / 2)
+
+        n = self.__inst.get_n()
+        n_pairs = int(self.__pop_size / 2)
         children1 = np.ndarray(n_pairs, dtype=Solution)
         children2 = np.ndarray(n_pairs, dtype=Solution)
         for i in range(n_pairs):
             jobs_pa = -np.ones(n, dtype=int)
             jobs_pb = -np.ones(n, dtype=int)
-         
+
             for j in range(n):
-                jobs_pa[j] = self.parent[0][i].get_job_machine(j)
-                jobs_pb[j] = self.parent[1][i].get_job_machine(j)
-          
-            # one point 
+                jobs_pa[j] = self.__parent[0][i].get_job_machine(j)
+                jobs_pb[j] = self.__parent[1][i].get_job_machine(j)
+
+            # one point
             cut = random.randint(1, n-1)
-            
+
             child_a = np.concatenate([jobs_pa[:cut], jobs_pb[cut:]], axis=0)
             child_b = np.concatenate([jobs_pb[:cut], jobs_pa[cut:]], axis=0)
-            
+
             # sep list jobs por maq
-            child1 = np.ndarray(self.inst.get_m(), dtype=list)
-            child2 = np.ndarray(self.inst.get_m(), dtype=list)
-            
-            for k in range(self.inst.get_m()):
-                va = [j for j in range(self.inst.get_n()) if child_a[j] == k]
-                vb = [j for j in range(self.inst.get_n()) if child_b[j] == k]
+            child1 = np.ndarray(self.__inst.get_m(), dtype=list)
+            child2 = np.ndarray(self.__inst.get_m(), dtype=list)
+
+            for k in range(self.__inst.get_m()):
+                va = [j for j in range(self.__inst.get_n()) if child_a[j] == k]
+                vb = [j for j in range(self.__inst.get_n()) if child_b[j] == k]
                 random.shuffle(va)
                 random.shuffle(vb)
                 child1[k] = va
                 child2[k] = vb
 
-            sol_a = Solution(self.inst)
-            sol_b = Solution(self.inst)
+            sol_a = Solution(self.__inst)
+            sol_b = Solution(self.__inst)
 
-            self.constr.build_like_b(sol_a, child1)
-            self.constr.build_like_b(sol_b, child2)
-            
+            self.__constr.build_like_b(sol_a, child1)
+            self.__constr.build_like_b(sol_b, child2)
+
             children1[i] = sol_a
             children2[i] = sol_b
 
-        self.children = np.concatenate([children1, children2], axis=0)
+        self.__children = np.concatenate([children1, children2], axis=0)
 
     def __make_mutation__(self):
-        
-        for i in [0, int(self.pop_size * 0.25) - 1, int(self.pop_size * 0.5) - 1]:
-            sol = self.children[i] 
-            self.neighbor.swap(sol)
-            self.neighbor.insertion(sol)
+
+        for i in [0, int(self.__pop_size * 0.25) - 1, int(self.__pop_size * 0.5) - 1]:
+            sol = self.__children[i]
+            self.__neighbor.swap(sol)
+            self.__neighbor.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     self.ls.gen_insert(sol, i)
-            self.neighbor.swap(sol)
-            self.neighbor.insertion(sol)
+            self.__neighbor.swap(sol)
+            self.__neighbor.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     ls.gen_insert(sol, i)
 
@@ -247,13 +249,14 @@ class Genetic:
             self.__make_mutation__()
 
             self.generation += 1
-            pop = np.ndarray(self.pop_size, dtype=int)    
-            for i in range(self.pop_size):
-                pop[i] = self.pop[i].cmax
-                
+            pop = np.ndarray(self.__pop_size, dtype=int)
+            for i in range(self.__pop_size):
+                pop[i] = self.__pop[i].cmax
+
             std = np.std(pop)
             var = np.var(pop)
-            print(f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | var: {var:.2f} | std: {std:.2f}")
+            print(
+                f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | var: {var:.2f} | std: {std:.2f}")
             if var < 1:
                 break
 
