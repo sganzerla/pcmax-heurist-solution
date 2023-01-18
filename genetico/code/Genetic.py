@@ -1,12 +1,7 @@
-import numpy as np
-import random
-
 from typing import List
 
-from code.Instance import *
-from code.Solution import *
-from code.Neighborhood import *
 from code.Constructive import *
+from code.Neighborhood import *
 
 
 class Genetic:
@@ -18,7 +13,7 @@ class Genetic:
         self.__children: List[Solution]
         self.__inst = inst
         self.__neighbor = Neighborhood(self.__inst)
-        self.__constr = Constructive(self.__inst)
+        self.__const = Constructive(self.__inst)
         self.inc_sol: Solution
         self.generation: int = 1
 
@@ -136,23 +131,22 @@ class Genetic:
                     job_b = self.__parent[1][p].m[Node.Suc][job_b]
 
             chrom_pa = np.asarray([int(i)
-                                 for i in jobs_pa_str.split() if i.isdigit()])
+                                   for i in jobs_pa_str.split() if i.isdigit()])
             chrom_pb = np.asarray([int(i)
-                                 for i in jobs_pb_str.split() if i.isdigit()])
-            cut = random.randint(1, n -1)
-
+                                   for i in jobs_pb_str.split() if i.isdigit()])
+            cut = random.randint(1, n - 1)
 
             chrom_ca = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
             chrom_cb = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
-            
+
             # fix
             chrom_a, chrom_b = self.__fix_chrom__(chrom_ca, chrom_cb)
 
             sol_a = Solution(self.__inst)
             sol_b = Solution(self.__inst)
 
-            self.__constr.build_like_a(sol_a, chrom_a, jobs_size_pa)
-            self.__constr.build_like_a(sol_b, chrom_b, jobs_size_pb)
+            self.__const.build_like_a(sol_a, chrom_a, jobs_size_pa)
+            self.__const.build_like_a(sol_b, chrom_b, jobs_size_pb)
 
             nursery_a[p] = sol_a
             nursery_b[p] = sol_b
@@ -196,7 +190,7 @@ class Genetic:
                 chrom_pb[j] = self.__parent[1][i].get_job_machine(j)
 
             # one point
-            cut = random.randint(1, n-1)
+            cut = random.randint(1, n - 1)
 
             chrom_ca = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
             chrom_cb = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
@@ -217,8 +211,8 @@ class Genetic:
             sol_a = Solution(self.__inst)
             sol_b = Solution(self.__inst)
 
-            self.__constr.build_like_b(sol_a, chrom_a)
-            self.__constr.build_like_b(sol_b, chrom_b)
+            self.__const.build_like_b(sol_a, chrom_a)
+            self.__const.build_like_b(sol_b, chrom_b)
 
             nursery_a[i] = sol_a
             nursery_b[i] = sol_b
@@ -249,8 +243,8 @@ class Genetic:
 
             self.generation += 1
             pop = np.ndarray(self.__pop_size, dtype=int)
-            for i in range(self.__pop_size):
-                pop[i] = self.__pop[i].cmax
+            for p in range(self.__pop_size):
+                pop[p] = self.__pop[p].cmax
 
             std = np.std(pop)
             var = np.var(pop)

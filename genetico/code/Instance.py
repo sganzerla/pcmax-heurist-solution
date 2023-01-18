@@ -1,5 +1,6 @@
 from code.Extract import *
 
+
 class Instance:
     def __init__(self, ext: Extract):
         self.__m = ext.get_m()

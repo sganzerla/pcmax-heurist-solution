@@ -1,5 +1,5 @@
-from code.Instance import *
 from code.Solution import *
+
 
 class Neighborhood:
 
@@ -14,7 +14,7 @@ class Neighborhood:
             for i in range(self.inst.get_m()):
                 if solu.get_c(i) < solu.get_makespan():
                     continue
-                mi = self.inst.get_n()+i
+                mi = self.inst.get_n() + i
                 jobi = solu.get_suc(mi)
                 while jobi != mi:
                     deltai = self.inst.get_s(
@@ -26,7 +26,7 @@ class Neighborhood:
                         jobi = solu.get_suc(jobi)
                         continue
                     for j in range(self.inst.get_m()):
-                        mj = self.inst.get_n()+j
+                        mj = self.inst.get_n() + j
                         if j == i or solu.get_suc(mj) == mj:
                             continue
                         jobj = mj
@@ -64,11 +64,11 @@ class Neighborhood:
             for i in range(self.inst.get_m()):
                 if solu.get_c(i) < solu.get_makespan():
                     continue
-                mi = self.inst.get_n()+i
+                mi = self.inst.get_n() + i
                 jobi = solu.get_suc(mi)
                 while jobi != mi:
-                    for j in range(i+1, self.inst.get_m()):
-                        mj = self.inst.get_n()+j
+                    for j in range(i + 1, self.inst.get_m()):
+                        mj = self.inst.get_n() + j
                         jobj = solu.get_suc(mj)
                         while jobj != mj:
                             deltaj = -self.inst.get_s(solu.get_pre(jobj), jobj)
@@ -82,14 +82,14 @@ class Neighborhood:
                             deltai += self.inst.get_s(jobj, solu.get_suc(jobi))
 
                             if solu.get_c(j) + deltaj > solu.get_makespan() or \
-                               solu.get_c(i) + deltai > solu.get_makespan():
+                                    solu.get_c(i) + deltai > solu.get_makespan():
                                 jobj = solu.get_suc(jobj)
                                 if jobj == mj:
                                     break
                                 continue
 
                             if solu.get_c(j) + deltaj < solu.get_makespan() or \
-                               solu.get_c(i) + deltai < solu.get_makespan():
+                                    solu.get_c(i) + deltai < solu.get_makespan():
                                 if deltai + deltaj <= best_delta:
                                     best_delta = deltai + deltaj
                                     best_mov = [i, jobi, j, jobj]
@@ -122,9 +122,9 @@ class Neighborhood:
 
             best_delta = 0
             best_move = []
-            for _ in range(solu.get_num_jobs_machine(m)-3):
-                for _ in range(1, solu.get_num_jobs_machine(m)-2):
-                    for _ in range(2, solu.get_num_jobs_machine(m)-1):
+            for _ in range(solu.get_num_jobs_machine(m) - 3):
+                for _ in range(1, solu.get_num_jobs_machine(m) - 2):
+                    for _ in range(2, solu.get_num_jobs_machine(m) - 1):
                         delta = -self.inst.get_s(solu.get_pre(job1), job1)
                         delta -= self.inst.get_s(solu.get_pre(job2), job2)
                         delta -= self.inst.get_s(solu.get_pre(job3), job3)

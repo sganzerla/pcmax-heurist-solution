@@ -1,7 +1,6 @@
 import sys
 import random
 
-from code.Instance import *
 from code.Solution import *
 
 
