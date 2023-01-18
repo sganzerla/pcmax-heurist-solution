@@ -1,17 +1,30 @@
-from ConstructiveSolution import *
-from GA import *
+from code.Constructive import *
+from code.Extract import *
+from code.Genetic import *
+from code.Instance import *
+from code.Solution import *
+import os
+from optparse import OptionParser
 
 if __name__ == "__main__":
 
-    # path = '001_struc_2_10_01'
-    path = '006_struc_2_100_01'
+    parser = OptionParser()
+    parser.add_option("-r", "--file", dest="file", type = "string")
+    (opts, _) = parser.parse_args()
+    path = opts.file
     
-    inst = Instance(Extract(path))
+    if path is None:
+        # path = '../instance/001_struc_2_10_01'
+        path = '../instance/002_struc_2_10_02'
+        # path = '../instance/006_struc_2_100_01'
 
-    pop_size = 200
+
+    inst = Instance(Extract(os.path.join(path)))
+
+    pop_size = 50
     
     init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
-    const_sol = ConstructiveSolution(inst)
+    const_sol = Constructive(inst)
     
     for i in range(pop_size):
         solu = Solution(inst)
@@ -19,11 +32,10 @@ if __name__ == "__main__":
         init_pop[i] = solu
 
    
-    ga = GA(init_pop, inst)
-    ga.next_generation(1000)
+    ga = Genetic(init_pop, inst)
+    ga.next_generation(100)
     
     
-     # testando a adição de uma solução gulosa
     solu = Solution(inst)
     const_sol.build_greedy(solu)
     print("CMax Guloso: ", solu.cmax)

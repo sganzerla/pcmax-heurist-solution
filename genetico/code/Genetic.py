@@ -1,11 +1,14 @@
-from Solution import *
+import numpy as np
 import random
+
 from typing import List
 
-from LocalSearch import *
+from code.Instance import *
+from code.Solution import *
+from code.LocalSearch import *
 
 
-class GA:
+class Genetic:
     def __init__(self, init_pop: List[Solution], inst: Instance):
         self.pop_size: int = len(init_pop)
         self.pop: List[Solution] = init_pop

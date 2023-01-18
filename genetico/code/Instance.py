@@ -1,5 +1,4 @@
-from Extract import *
-
+from code.Extract import *
 
 class Instance:
     def __init__(self, ext: Extract):

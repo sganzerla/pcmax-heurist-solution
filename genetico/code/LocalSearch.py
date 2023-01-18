@@ -1,6 +1,5 @@
-from Instance import Instance
-from Solution import Solution
-
+from code.Instance import *
+from code.Solution import *
 
 class LocalSearch:
 

@@ -1,10 +1,10 @@
 import sys
-from Solution import *
-from Instance import *
 import random
 
+from code.Instance import *
+from code.Solution import *
 
-class ConstructiveSolution:
+class Constructive:
     def __init__(self, inst: Instance):
         self.inst = inst
 

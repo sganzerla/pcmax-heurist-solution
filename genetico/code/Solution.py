@@ -1,7 +1,6 @@
 from enum import IntEnum
 
-from Instance import *
-
+from code.Instance import *
 
 class Node(IntEnum):
     Pre = 0
