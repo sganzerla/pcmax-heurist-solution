@@ -27,17 +27,17 @@ if __name__ == "__main__":
     const_sol = Constructive(inst)
     
     for i in range(pop_size):
-        solu = Solution(inst)
-        const_sol.build_naive(solu)
-        init_pop[i] = solu
+        sol = Solution(inst)
+        const_sol.build_naive(sol)
+        init_pop[i] = sol
 
    
-    solu = Solution(inst)
-    const_sol.build_greedy(solu)
-    init_pop[0] = solu
+    sol = Solution(inst)
+    const_sol.build_greedy(sol)
+    init_pop[0] = sol
     ga = Genetic(init_pop, inst)
     ga.next_generation(30)
-    print("CMax Guloso: ", solu.cmax)
+    print("CMax Guloso: ", sol.cmax)
     
     
 

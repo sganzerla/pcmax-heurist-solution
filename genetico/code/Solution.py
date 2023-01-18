@@ -157,14 +157,14 @@ class Solution:
             job = self.m[Node.Suc][job]
             if self.mj[job] != m:
                 print(
-                    f"Erro de alocado do job {job} : maquina solu {self.mj[job]} maquina correta {m}")
+                    f"Erro de alocado do job {job} : maquina sol {self.mj[job]} maquina correta {m}")
                 ok = 0
             while job < self.inst.get_n():
                 cm += self.inst.get_s(job, self.m[Node.Suc][job])
                 job = self.m[Node.Suc][job]
             if cm != self.c[m]:
                 print("Erro no calculo do tempo total da maquina ",
-                      m, " C solu: ", self.c[m], " C correto: ", cm)
+                      m, " C sol: ", self.c[m], " C correto: ", cm)
                 ok = 0
         if ok:
             print("Solution ok")

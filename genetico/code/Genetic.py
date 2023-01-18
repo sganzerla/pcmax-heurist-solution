@@ -93,13 +93,6 @@ class Genetic:
 
     def __crossover__(self):
 
-        # if self.generation % 2 == 0:
-        self.__encoded_by_job__()
-        # else:
-        # self.__encoded_by_machine__()
-
-    def __encoded_by_job__(self):
-
         m = self.__inst.get_m()
         n = self.__inst.get_n()
 
@@ -174,50 +167,6 @@ class Genetic:
             chr_b[idx_dup_b[i]] = dup_a[i]
 
         return chr_a, chr_b
-
-    def __encoded_by_machine__(self):
-
-        n = self.__inst.get_n()
-        pair_size = int(self.__pop_size / 2)
-        nursery_a = np.ndarray(pair_size, dtype=Solution)
-        nursery_b = np.ndarray(pair_size, dtype=Solution)
-        for i in range(pair_size):
-            chrom_pa = -np.ones(n, dtype=int)
-            chrom_pb = -np.ones(n, dtype=int)
-
-            for j in range(n):
-                chrom_pa[j] = self.__parent[0][i].get_job_machine(j)
-                chrom_pb[j] = self.__parent[1][i].get_job_machine(j)
-
-            # one point
-            cut = random.randint(1, n - 1)
-
-            chrom_ca = np.concatenate([chrom_pa[:cut], chrom_pb[cut:]], axis=0)
-            chrom_cb = np.concatenate([chrom_pb[:cut], chrom_pa[cut:]], axis=0)
-
-            # sep list jobs por maq
-            chrom_a = np.ndarray(self.__inst.get_m(), dtype=list)
-            chrom_b = np.ndarray(self.__inst.get_m(), dtype=list)
-
-            for k in range(self.__inst.get_m()):
-                a = [j for j in range(self.__inst.get_n()) if chrom_ca[j] == k]
-                b = [j for j in range(self.__inst.get_n()) if chrom_cb[j] == k]
-                # TODO criar método para escolher melhor posição de cada tarefa dentro 
-                random.shuffle(a)
-                random.shuffle(b)
-                chrom_a[k] = a
-                chrom_b[k] = b
-
-            sol_a = Solution(self.__inst)
-            sol_b = Solution(self.__inst)
-
-            self.__const.build_like_b(sol_a, chrom_a)
-            self.__const.build_like_b(sol_b, chrom_b)
-
-            nursery_a[i] = sol_a
-            nursery_b[i] = sol_b
-
-        self.__children = np.concatenate([nursery_a, nursery_b], axis=0)
 
     def __make_mutation__(self):
 
