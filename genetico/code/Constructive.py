@@ -1,5 +1,6 @@
 import sys
 import random
+from typing import List
 
 from code.Solution import *
 
@@ -38,6 +39,42 @@ class Constructive:
             m = random.randint(0, self.__inst.get_m() - 1)
             solu.insert_job(
                 m, jobs[i], solu.get_pre(self.__inst.get_n() + m))
+
+    def build_best(self, solu: Solution, i_jobs: np.ndarray):
+
+        for i in i_jobs:
+            best_delta = sys.maxsize
+            best_move = [-1, -1]
+            for j in range(self.__inst.get_m()):
+                job = self.__inst.get_n() + j
+                suc = solu.get_suc(job)
+                # remove arco
+                delta = solu.get_c(j) - self.__inst.get_s(job, suc)
+                # add arco esq
+                delta += self.__inst.get_s(job, i)
+                # add arco dir
+                delta += self.__inst.get_s(i, suc)
+
+                if delta < best_delta:
+                    best_delta = delta
+                    best_move = [j, job]
+
+                while suc < self.__inst.get_n():
+                    job = suc
+                    suc = solu.get_suc(job)
+                    # remove arco
+                    delta = solu.get_c(j) - self.__inst.get_s(job, suc)
+                    # add arc esq
+                    delta += self.__inst.get_s(job, i)
+                    # add arc dir
+                    delta += self.__inst.get_s(i, suc)
+
+                    if delta < best_delta:
+                        best_delta = delta
+                        best_move = [j, job]
+
+            solu.insert_job(best_move[0], i, best_move[1])
+
 
     def build_greedy(self, solu: Solution):
         i_jobs = self.__inst.get_p_copy().argsort()[::-1]

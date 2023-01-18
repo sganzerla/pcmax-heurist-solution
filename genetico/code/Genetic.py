@@ -145,8 +145,8 @@ class Genetic:
             sol_a = Solution(self.__inst)
             sol_b = Solution(self.__inst)
 
-            self.__const.build_like_a(sol_a, chrom_a, jobs_size_pa)
-            self.__const.build_like_a(sol_b, chrom_b, jobs_size_pb)
+            self.__const.build_best(sol_a, chrom_a)
+            self.__const.build_best(sol_b, chrom_b)
 
             nursery_a[p] = sol_a
             nursery_b[p] = sol_b
@@ -225,12 +225,6 @@ class Genetic:
             sol = self.__children[i]
             self.__neighbor.swap(sol)
             self.__neighbor.insertion(sol)
-            # for i in range(self.inst.get_m()):
-            #     self.ls.gen_insert(sol, i)
-            self.__neighbor.swap(sol)
-            self.__neighbor.insertion(sol)
-            # for i in range(self.inst.get_m()):
-            #     ls.gen_insert(sol, i)
 
     def next_generation(self, n_generation: int):
 
