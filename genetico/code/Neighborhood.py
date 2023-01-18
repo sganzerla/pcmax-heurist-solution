@@ -1,7 +1,7 @@
 from code.Instance import *
 from code.Solution import *
 
-class LocalSearch:
+class Neighborhood:
 
     def __init__(self, inst: Instance):
         self.inst = inst

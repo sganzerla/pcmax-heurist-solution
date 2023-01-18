@@ -5,7 +5,8 @@ from typing import List
 
 from code.Instance import *
 from code.Solution import *
-from code.LocalSearch import *
+from code.Neighborhood import *
+from code.Constructive import *
 
 
 class Genetic:
@@ -18,7 +19,8 @@ class Genetic:
         self.generation: int = 1
         self.inc_sol: Solution
         self.inst = inst
-        self.ls = LocalSearch(self.inst)
+        self.neighbor = Neighborhood(self.inst)
+        self.constr = Constructive(self.inst)
 
     def __start_population__(self):
         if self.generation > 1:
@@ -149,8 +151,8 @@ class Genetic:
             sol_a = Solution(self.inst)
             sol_b = Solution(self.inst)
 
-            sol_a.create_sol_strat_a(child1, jobs_size_pa)
-            sol_b.create_sol_strat_a(child2, jobs_size_pb)
+            self.constr.build_like(sol_a, child1, jobs_size_pa)
+            self.constr.build_like(sol_b, child2, jobs_size_pb)
             
             children1[p] = sol_a
             children2[p] = sol_b
@@ -225,12 +227,12 @@ class Genetic:
         
         for i in [0, int(self.pop_size * 0.25) - 1, int(self.pop_size * 0.5) - 1]:
             sol = self.children[i] 
-            self.ls.swap(sol)
-            self.ls.insertion(sol)
+            self.neighbor.swap(sol)
+            self.neighbor.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     self.ls.gen_insert(sol, i)
-            self.ls.swap(sol)
-            self.ls.insertion(sol)
+            self.neighbor.swap(sol)
+            self.neighbor.insertion(sol)
             # for i in range(self.inst.get_m()):
             #     ls.gen_insert(sol, i)
 
