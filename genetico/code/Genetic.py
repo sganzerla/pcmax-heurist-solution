@@ -191,16 +191,16 @@ class Genetic:
             self.__make_mutation__()
 
             self.generation += 1
-            pop = np.ndarray(self.__pop_size, dtype=int)
-            for p in range(self.__pop_size):
-                pop[p] = self.__pop[p].cmax
+            # pop = np.ndarray(self.__pop_size, dtype=int)
+            # for p in range(self.__pop_size):
+            #     pop[p] = self.__pop[p].cmax
 
-            std = np.std(pop)
-            var = np.var(pop)
-            print(
-                f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | var: {var:.2f} | std: {std:.2f}")
-            if var < 1:
-                break
+            # std = np.std(pop)
+            # var = np.var(pop)
+            # print(
+            #     f"cmax: {self.inc_sol.cmax} | gen: {self.generation} | var: {var:.2f} | std: {std:.2f}")
+            # if var < 1:
+            #     break
 
 
 class Individual:
