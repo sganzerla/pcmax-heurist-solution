@@ -27,15 +27,13 @@ def get_root_instances():
     return root, files
 
 
-
-
 if __name__ == "__main__":
 
     # python3 Tests.py -s ../instance/
 
     pop_size = 10  # população inicial
     gen_size = 5  # quantidade de gerações
-    repeat_size = 2  # repetir o GA com a mesma instância
+    repeat_size = 20  # repetir o GA com a mesma instância
 
     root, files = get_root_instances()
 
@@ -45,7 +43,7 @@ if __name__ == "__main__":
     
     times = np.ndarray(repeat_size, dtype=float)
     cmaxs = np.ndarray(repeat_size, dtype=int)
-    data = pd.DataFrame(columns=["instance", "m", "n", "repeat", "cmax", "time", "greedy"])
+    data = pd.DataFrame(columns=["instance", "m", "n", "cmax_const", "repeat", "cmax_genet", "time", "population", "generation", "var_cmax", "std_cmax", "mean_cmax", "var_time", "std_time", "mean_time"])
 
     for i in range(instance_size):
         name = files[i]
@@ -66,14 +64,38 @@ if __name__ == "__main__":
             times[j] = time.time() - time_genet
             cmaxs[j] = ga.inc_sol.cmax
             print(
-                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | greedy: {greedy.cmax} |repeat: {j} | cmax: {cmaxs[j]} | time: {times[j]} ")
+                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | cmax_greedy: {greedy.cmax} |repeat: {j} | cmax_genetic: {cmaxs[j]} | time: {times[j]} ")
         names = np.array([name]*repeat_size)
         greedys = np.array([greedy.cmax]*repeat_size)
         ms = np.array([inst.get_m()]* repeat_size)
         ns = np.array([inst.get_n()]* repeat_size)
-        df = pd.DataFrame(data={"instance": names, "m": ms, "n": ns, "greedy": greedys,  "repeat": range(
-            repeat_size), "cmax": cmaxs, "time": times})
+        var_time = np.array([np.var(times)] * repeat_size)
+        mean_time = np.array([np.mean(times)] * repeat_size)
+        std_time = np.array([np.std(times)] * repeat_size)
+        var_cmax = np.array([np.var(cmaxs)] * repeat_size)
+        mean_cmax = np.array([np.mean(cmaxs)] * repeat_size)
+        std_cmax = np.array([np.std(cmaxs)] * repeat_size)
+        population = np.array([pop_size] * repeat_size)
+        generation = np.array([gen_size] * repeat_size)
+        df = pd.DataFrame(data={
+            "instance": names,
+            "m": ms,
+            "n": ns,
+            "cmax_const": greedys,
+            "repeat": range(repeat_size),
+            "cmax_genet": cmaxs,
+            "time": times,
+            "var_cmax": var_cmax,
+            "std_cmax": std_cmax,
+            "mean_cmax" : mean_cmax,
+            "var_time" : var_time,
+            "std_time" : std_time,
+            "mean_time": mean_time,
+            "generation": generation,
+            "population": population
+        })
         
         data = pd.concat([data, df], ignore_index=True)
     
-    print(data)
+    data.to_csv('report.csv', decimal=".", sep = ";")
+    print("File report.csv created.")
