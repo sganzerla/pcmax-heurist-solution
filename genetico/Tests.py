@@ -68,7 +68,7 @@ if __name__ == "__main__":
             times[j] = time.time() - time_genet
             cmaxs[j] = ga.inc_sol.cmax
             print(
-                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | cmax_greedy: {greedy.cmax} | pop_size: {pop_size} |repeat: {j} | cmax_genetic: {cmaxs[j]} | time: {times[j]} ")
+                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | cmax_greedy: {greedy.cmax} | pop_size: {pop_size} | generations: {gen_size} |repeat: {j} | cmax_genetic: {cmaxs[j]} | time: {times[j]} ")
         names = np.array([name]*repeat_size)
         greedys = np.array([greedy.cmax]*repeat_size)
         ms = np.array([inst.get_m()]* repeat_size)
