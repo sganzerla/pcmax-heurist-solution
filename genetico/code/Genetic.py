@@ -1,5 +1,5 @@
 from typing import List
-
+from math import ceil
 from code.Constructive import *
 from code.Neighborhood import *
 
@@ -15,10 +15,10 @@ class Genetic:
         self.__neighbor = Neighborhood(self.__inst)
         self.__const = Constructive(self.__inst)
         self.inc_sol: Solution
-        self.generation: int = 1
+        self.generation: int = 0
 
     def __start_population__(self):
-        if self.generation > 1:
+        if self.generation > 0:
             # junta pop original com nova
             self.__pop = np.concatenate(
                 [self.__pop, self.__children], dtype=Solution, axis=0)
@@ -85,7 +85,7 @@ class Genetic:
             weights[i5] = fit_sum_group[4]
             population[i5] = fit_pop[i5].sol
 
-        parent_size = int(self.__pop_size / 2)
+        parent_size = ceil(self.__pop_size / 2)
         p1 = random.choices(population, weights=weights, k=parent_size)
         p2 = random.choices(population, weights=weights, k=parent_size)
         parent: List[List[Solution]] = [p1, p2]
@@ -96,7 +96,7 @@ class Genetic:
         m = self.__inst.get_m()
         n = self.__inst.get_n()
 
-        pair_size = int(self.__pop_size / 2)
+        pair_size = ceil(self.__pop_size / 2)
         nursery_a = np.ndarray(pair_size, dtype=Solution)
         nursery_b = np.ndarray(pair_size, dtype=Solution)
 
@@ -170,10 +170,16 @@ class Genetic:
 
     def __make_mutation__(self):
 
-        for i in [0, int(self.__pop_size * 0.25) - 1, int(self.__pop_size * 0.5) - 1]:
+        rnd = random.choices(range(self.__pop_size), k=3)
+        for i in rnd:
             sol = self.__children[i]
             self.__neighbor.swap(sol)
             self.__neighbor.insertion(sol)
+            self.__neighbor.swap(sol)
+            self.__neighbor.insertion(sol)
+            self.__neighbor.swap(sol)
+            self.__neighbor.insertion(sol) 
+     
 
     def next_generation(self, n_generation: int):
 
