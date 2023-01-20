@@ -46,6 +46,11 @@ if __name__ == "__main__":
         for file in paths:
             files.append(file)
 
+
+    print([files[0]])
+    
+    exit()
+
     inst_size = len(files)  # quantidade de instâncias dentro da pasta
 
     files = sorted(files)
