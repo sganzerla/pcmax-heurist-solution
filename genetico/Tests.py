@@ -18,22 +18,26 @@ def get_root_instances():
     parser = OptionParser()
     parser.add_option("-s", "--source", dest="source", type="string")
     parser.add_option("-r", "--repeat", dest="repeat", type="int")
+    # solução gulosa usada na população inicial valor 1 senão 0 e 2 Prof. Felipe
+    parser.add_option("-g", "--greedy", dest="greedy", type="int")
     (opts, _) = parser.parse_args()
     source = opts.source
     repeat = opts.repeat
+    greedy = opts.greedy
     
             
-    return repeat, source
+    return repeat, source, greedy
 
 def use_const_init_sol(type: int):
     return ['None', 'Greedy', 'Muller'][type]
 
 if __name__ == "__main__":
-
-    # python3 Tests.py -s ../instance/ -r 20
+    print("use esse comando\n")
+    print("python3 Tests.py --source ../instance/ --repeat 9 --greedy 0\n")
+    print("python3 Tests.py -s ../instance/ -r 10 -g 1\n")
     gen_size = 5  # quantidade de gerações
-    start_good_sol = 0 # solução gulosa usada na população inicial valor 1 senão 0 e 2 Felipe
-    repeat_size, root = get_root_instances()
+    
+    repeat_size, root, greedy_type = get_root_instances()
 
     files = []
     for (_, _, paths) in os.walk(root):
@@ -64,14 +68,17 @@ if __name__ == "__main__":
                 sol = Solution(inst)
                 constr.build_naive(sol)
                 init_pop[k] = sol
-
+            # relatorio greedy inclui solução gulosa dentro pop inicial
+            if greedy_type == 1:
+                init_pop[0] = greedy
+            
             ga = Genetic(init_pop, inst)
             ga.next_generation(gen_size)
             times[j] = time.time() - time_genet
             cmaxs[j] = ga.inc_sol.cmax
             gaps[j] = ((greedy.cmax - ga.inc_sol.cmax) / ga.inc_sol.cmax) * -1
             print(
-                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | repeat: {j} | pop_size: {pop_size} | generations: {gen_size} | cmax_greedy: {greedy.cmax} |  cmax_genetic: {cmaxs[j]} | time: {times[j]:.2f} | gap: {gaps[j]:.2f} | start_good_sol: {use_const_init_sol(start_good_sol)} | mutations: {int(0.10 * pop_size + 1)}")
+                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | repeat: {j} | pop_size: {pop_size} | generations: {gen_size} | cmax_greedy: {greedy.cmax} |  cmax_genetic: {cmaxs[j]} | time: {times[j]:.2f} | gap: {gaps[j]:.2f} | start_good_sol: {use_const_init_sol(greedy_type)} | mutations: {int(0.10 * pop_size + 1)}")
         mutations = np.array([int(0.10 * pop_size + 1)]* repeat_size)
         names = np.array([name]*repeat_size)
         greedys = np.array([greedy.cmax] * repeat_size)
@@ -91,7 +98,7 @@ if __name__ == "__main__":
         stds_cmax = np.array([std_cmax] * repeat_size)
         population = np.array([pop_size] * repeat_size)
         generation = np.array([gen_size] * repeat_size)
-        use_good_init_sol = np.array([use_const_init_sol(start_good_sol)] * repeat_size)
+        use_good_init_sol = np.array([use_const_init_sol(greedy_type)] * repeat_size)
         df = pd.DataFrame(data={
             "instance": names,
             "m": ms,
