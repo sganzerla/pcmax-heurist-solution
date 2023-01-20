@@ -35,8 +35,9 @@ def use_const_init_sol(type: int):
 
 
 if __name__ == "__main__":
-    # python3 Tests.py --source ../instance/ --repeat 9 --greedy 0\n")
-    # python3 Tests.py -s ../instance/ -r 10 -g 1\n")
+    
+    # python3 Tests.py --source instance/ --repeat 9 --greedy 0
+    # python3 Tests.py -s instance/ -r 10 -g 1
 
     gen_size = 5  # quantidade de gerações
     repeat_size, root, greedy_type = get_root_instances()
@@ -45,11 +46,6 @@ if __name__ == "__main__":
     for (_, _, paths) in os.walk(root):
         for file in paths:
             files.append(file)
-
-
-    print([files[0]])
-    
-    exit()
 
     inst_size = len(files)  # quantidade de instâncias dentro da pasta
 
