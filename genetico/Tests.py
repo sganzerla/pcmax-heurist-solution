@@ -25,14 +25,14 @@ def get_root_instances():
             
     return repeat, source
 
+def use_const_init_sol(type: int):
+    return ['None', 'Greedy', 'Muller'][type]
 
 if __name__ == "__main__":
 
     # python3 Tests.py -s ../instance/ -r 20
-
-    pop_size = 10  # população inicial
     gen_size = 5  # quantidade de gerações
-
+    start_good_sol = 0 # solução gulosa usada na população inicial valor 1 senão 0 e 2 Felipe
     repeat_size, root = get_root_instances()
 
     files = []
@@ -47,17 +47,19 @@ if __name__ == "__main__":
     
     times = np.ndarray(repeat_size, dtype=float)
     cmaxs = np.ndarray(repeat_size, dtype=int)
-    data = pd.DataFrame(columns=["instance", "m", "n", "cmax_const", "repeat", "cmax_genet", "gap_mean", "time", "population", "generation", "var_cmax", "std_cmax", "mean_cmax", "var_time", "std_time", "mean_time"])
-
+    gaps = np.ndarray(repeat_size, dtype=float)
+    data = pd.DataFrame(columns=["instance", "m", "n", "repeat", "population", "generation", "cmax_const",
+                        "cmax_genet", "time", "gap",  "var_cmax", "std_cmax", "mean_cmax", "var_time", "std_time", "mean_time", "use_const_init_sol"])
     for i in range(instance_size):
-        name = files[i]
-        inst = Instance(Extract(os.path.join(root + name)))
+        file = files[i]
+        name = "_".join(str(k) for k in file.split("_")[2:])
+        inst = Instance(Extract(os.path.join(root + file)))
         greedy = build_greedy(inst)
+        pop_size = int(5 + (inst.get_n() / inst.get_m()) * 0.20)
         for j in range(repeat_size):
             time_genet = time.time()
             init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
             constr = Constructive(inst)
-
             for k in range(pop_size):
                 sol = Solution(inst)
                 constr.build_naive(sol)
@@ -67,8 +69,9 @@ if __name__ == "__main__":
             ga.next_generation(gen_size)
             times[j] = time.time() - time_genet
             cmaxs[j] = ga.inc_sol.cmax
+            gaps[j] = ((greedy.cmax - ga.inc_sol.cmax) / ga.inc_sol.cmax) * -1
             print(
-                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | cmax_greedy: {greedy.cmax} | pop_size: {pop_size} | generations: {gen_size} |repeat: {j} | cmax_genetic: {cmaxs[j]} | time: {times[j]} ")
+                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | repeat: {j} | pop_size: {pop_size} | generations: {gen_size} | cmax_greedy: {greedy.cmax} |  cmax_genetic: {cmaxs[j]} | time: {times[j]:.2f} | gap: {gaps[j]:.2f} | start_good_sol: {use_const_init_sol(start_good_sol)} ")
         names = np.array([name]*repeat_size)
         greedys = np.array([greedy.cmax]*repeat_size)
         ms = np.array([inst.get_m()]* repeat_size)
@@ -87,8 +90,7 @@ if __name__ == "__main__":
         stds_cmax = np.array([std_cmax] * repeat_size)
         population = np.array([pop_size] * repeat_size)
         generation = np.array([gen_size] * repeat_size)
-        gap = ((greedy.cmax - mean_cmax) / means_cmax) * -1
-        gaps = np.array([gap] * repeat_size) 
+        use_good_init_sol = np.array([use_const_init_sol(start_good_sol)] * repeat_size)
         df = pd.DataFrame(data={
             "instance": names,
             "m": ms,
@@ -105,7 +107,8 @@ if __name__ == "__main__":
             "mean_time": means_time,
             "generation": generation,
             "population": population,
-            "gap_mean": gap
+            "gap": gaps,
+            "use_const_init_sol": use_good_init_sol
         })
         
         data = pd.concat([data, df], ignore_index=True)
