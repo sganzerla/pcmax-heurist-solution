@@ -157,9 +157,12 @@ class Genetic:
         # idx jobs dup A|B
         idx_dup_a = np.ndarray(size, dtype=int)
         idx_dup_b = np.ndarray(size, dtype=int)
+        
+        # 
+        idx = random.choice([0, 1])
         for i in range(size):
-            idx_dup_a[i] = np.where(chr_a == dup_a[i])[0][0]
-            idx_dup_b[i] = np.where(chr_b == dup_b[i])[0][0]
+            idx_dup_a[i] = np.where(chr_a == dup_a[i])[0][idx]
+            idx_dup_b[i] = np.where(chr_b == dup_b[i])[0][idx]
 
         # subs jobs dup
         for i in range(size):
