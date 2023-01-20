@@ -170,7 +170,8 @@ class Genetic:
 
     def __make_mutation__(self):
 
-        rnd = random.choices(range(self.__pop_size), k=3)
+        perc = int(0.10 * self.__pop_size + 1)
+        rnd = random.choices(range(self.__pop_size), k=perc)
         for i in rnd:
             sol = self.__children[i]
             self.__neighbor.swap(sol)

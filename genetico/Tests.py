@@ -49,13 +49,13 @@ if __name__ == "__main__":
     cmaxs = np.ndarray(repeat_size, dtype=int)
     gaps = np.ndarray(repeat_size, dtype=float)
     data = pd.DataFrame(columns=["instance", "m", "n", "repeat", "population", "generation", "cmax_const",
-                        "cmax_genet", "time", "gap",  "var_cmax", "std_cmax", "mean_cmax", "var_time", "std_time", "mean_time", "use_const_init_sol"])
+                        "cmax_genet", "time", "gap",  "var_cmax", "std_cmax", "mean_cmax", "var_time", "std_time", "mean_time", "use_const_init_sol", "mutation_size"])
     for i in range(instance_size):
         file = files[i]
         name = "_".join(str(k) for k in file.split("_")[2:])
         inst = Instance(Extract(os.path.join(root + file)))
         greedy = build_greedy(inst)
-        pop_size = int(5 + (inst.get_n() / inst.get_m()) * 0.20)
+        pop_size = int(5 + (inst.get_n() / inst.get_m()) * 0.50)
         for j in range(repeat_size):
             time_genet = time.time()
             init_pop: List[Solution] = np.ndarray(pop_size, dtype=Solution)
@@ -71,9 +71,10 @@ if __name__ == "__main__":
             cmaxs[j] = ga.inc_sol.cmax
             gaps[j] = ((greedy.cmax - ga.inc_sol.cmax) / ga.inc_sol.cmax) * -1
             print(
-                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | repeat: {j} | pop_size: {pop_size} | generations: {gen_size} | cmax_greedy: {greedy.cmax} |  cmax_genetic: {cmaxs[j]} | time: {times[j]:.2f} | gap: {gaps[j]:.2f} | start_good_sol: {use_const_init_sol(start_good_sol)} ")
+                f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | repeat: {j} | pop_size: {pop_size} | generations: {gen_size} | cmax_greedy: {greedy.cmax} |  cmax_genetic: {cmaxs[j]} | time: {times[j]:.2f} | gap: {gaps[j]:.2f} | start_good_sol: {use_const_init_sol(start_good_sol)} | mutations: {int(0.10 * pop_size + 1)}")
+        mutations = np.array([int(0.10 * pop_size + 1)]* repeat_size)
         names = np.array([name]*repeat_size)
-        greedys = np.array([greedy.cmax]*repeat_size)
+        greedys = np.array([greedy.cmax] * repeat_size)
         ms = np.array([inst.get_m()]* repeat_size)
         ns = np.array([inst.get_n()]* repeat_size)
         var_time = np.var(times)
@@ -108,7 +109,8 @@ if __name__ == "__main__":
             "generation": generation,
             "population": population,
             "gap": gaps,
-            "use_const_init_sol": use_good_init_sol
+            "use_const_init_sol": use_good_init_sol,
+            "mutations": mutations
         })
         
         data = pd.concat([data, df], ignore_index=True)
