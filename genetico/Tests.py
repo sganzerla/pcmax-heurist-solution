@@ -3,6 +3,7 @@ from code.Extract import *
 from code.ExtractSolution import *
 from code.Genetic import *
 from code.Instance import *
+from code.Notification import *
 from code.Solution import *
 from optparse import OptionParser
 import os
@@ -93,7 +94,10 @@ if __name__ == "__main__":
             ga.next_generation(gen_size)
             times[j] = time.time() - time_genet
             cmaxs[j] = ga.inc_sol.cmax
-            gaps[j] = ((lit_sol.cmax - ga.inc_sol.cmax) / ga.inc_sol.cmax) * -1
+            gap = ((lit_sol.cmax - ga.inc_sol.cmax) / ga.inc_sol.cmax)
+            if gap != 0.0:
+                gap = gap * -1
+            gaps[j] = gap
             print(
                 f"inst: {name} |  m: {inst.get_m()} | n: {inst.get_n()} | repeat: {j} | pop_size: {pop_size} | generations: {gen_size} | literature: {lit_sol.cmax} |  cmax: {cmaxs[j]} | time: {times[j]:.2f} | gap: {gaps[j]:.2f} | start_good_sol: {use_const_init_sol(greedy_type)} | mutations: {int(0.10 * pop_size + 1)}")
         var_time = np.var(times)
@@ -127,5 +131,7 @@ if __name__ == "__main__":
 
         data = pd.concat([data, df], ignore_index=True)
 
-    data.to_csv('report.csv', decimal=".", sep=";")
+    data.to_csv(f'report{greedy_type}.csv', decimal=".", sep=";")
     print("File report.csv created.")
+    notification = Notification(".credentials")
+    notification.send_message(f'report{greedy_type}.csv', f"Instâncias: {inst_size} \n Repetiçõs: {repeat_size}\n Gerações: {gen_size} ", f'report{greedy_type}.csv')  
