@@ -10,15 +10,15 @@ class BuildPandas:
         
 
     def build_report_cmax(self):
-        df_gr = self.df.groupby(['struct','instance', 'literature'], sort=False, as_index=False)['cmax'].aggregate({'Min':'min', 'Max':'max', 'Mean': 'mean', 'Std': 'std', 'Var': 'var'})
-        df_gr['Gap Min'] = self.__calc_gap_min__(df_gr, 'literature', 'Min')
-        df_gr['Gap Mean'] = self.__calc_gap_min__(df_gr, 'literature', 'Mean')
+        df = self.df.groupby(['struct','instance', 'literature'], sort=False, as_index=False)['cmax'].aggregate({'Min':'min', 'Max':'max', 'Mean': 'mean', 'Std': 'std', 'Var': 'var'})
+        df['Gap Min'] = self.__calc_gap_min__(df, 'literature', 'Min')
+        df['Gap Mean'] = self.__calc_gap_min__(df, 'literature', 'Mean')
         # deixar float com 2 decimais
-        df_gr: pd.DataFrame = df_gr.round(2)
+        df: pd.DataFrame = df.round(2)
         # começa o indice com 1
-        df_gr.index +=1
+        df.index +=1
         
-        self.df_report_cmax = df_gr
+        self.df_report_cmax = df
         
     def __calc_gap_min__(self, df_gr: pd.DataFrame, col_a: str, col_b: str) -> pd.Series:
         col = (df_gr[col_a] - df_gr[col_b]) / df_gr[col_b]
@@ -30,21 +30,41 @@ class BuildPandas:
         print(self.df_report_cmax.to_latex(header=["Struct", "Instance", "C(BKS)", "C(Min)", "C(Max)", "C(Mean)", "C(Std)", "C(Var)", "Min", "Mean"]))
 
     def get_latex_type_instances(self):
-        print(self.df)
         df: pd.DataFrame = self.df.groupby(['struct', 'm' , 'n'], sort=False, as_index=False)['struct', 'm' , 'n']
         df = df.mean().round()
-        df['instances'] = df['m'] - df['m'] + 5
+        df['instances'] = 5
+        df = df.groupby(['struct', 'instances', 'm', 'n'], sort=False, as_index=False)['struct', 'instances', 'm', 'n']
+        df = df.first()
+        df.index +=1
+        print(df.to_latex(header=["Struct", "Instances", "M", "N"]))
+    
+    def get_mean_group_instances_type(self) -> pd.DataFrame:
+        df = self.df.groupby(['struct', 'm', 'n'], sort=False, as_index=False)['literature'].aggregate({'BKS(Mean)': 'mean', 'BKS(Std)': 'std'})
+        df2 = self.df.groupby(['struct', 'm', 'n'], sort=False, as_index=False)['cmax'].aggregate({'GA(Mean)': 'mean', 'GA(Std)': 'std'})
+        df['GA(Mean)'] = df2['GA(Mean)']
+        df['GA(Std)'] = df2['GA(Std)']
+        df: pd.DataFrame = df.round(2)
+        df['GAP'] = self.__calc_gap_min__(df, 'BKS(Mean)', 'GA(Mean)')
+        df.index += 1
         print(df.to_latex())
-        
-
+    
 if __name__ == "__main__":
     
     # uninformed initial solution
     u_is = os.path.join("amd", "report0.csv")
+    
     # greedy initial solution
     g_is = os.path.join("amd", "report1.csv")
+
     # literary initial solution
     l_is = os.path.join("amd", "report2.csv")
     
-    u = BuildPandas(l_is)
-    u.get_latex_type_instances()
+    report = [u_is, g_is, l_is]
+    
+    x = np.ndarray(3, dtype=pd.DataFrame)
+    for i in range(3):
+        u = BuildPandas(report[i])
+        df = u.get_mean_group_instances_type()
+        x[i] = df
+        print(x[i])
+            

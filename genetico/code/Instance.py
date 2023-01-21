@@ -7,6 +7,7 @@ class Instance:
         self.__p = ext.get_p()
         self.__n = len(self.__p)
         self.__s = self.__join_times__(ext.get_s())
+        self.__rate = int(self.__n / self.__m)
 
     def __join_times__(self, s: np.ndarray) -> np.ndarray:
         n = self.get_n()
@@ -22,6 +23,9 @@ class Instance:
 
     def get_m(self) -> int:
         return self.__m
+
+    def get_rate(self) -> int:
+        return self.__rate
 
     def get_n(self) -> int:
         return self.__n

@@ -72,7 +72,7 @@ if __name__ == "__main__":
         greedy_sol = build_greedy(inst)
         lit_sol = build_lit(inst, lit_sols[i])
         
-        pop_size = int(5 + (inst.get_n() / inst.get_m()) * 0.50)
+        pop_size = int(5 + (inst.get_rate()) * 0.50)
         
         for j in range(repeat_size):
             time_genet = time.time()
