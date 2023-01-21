@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-
+import numpy as np
 
 class BuildPandas:
     def __init__(self, path: str ):
@@ -26,9 +26,16 @@ class BuildPandas:
         col = col.apply(lambda x: str(f"{x:.2f}%"))
         return col
 
-    def get_latex(self):
-        print(self.df_report_cmax.to_latex(header=["Struct", "Instance", "C(BKS)", "C(Min)", "C(Max)", "C(Mean)", "C(Std)", "C(Var)", "Gap(Min)", "Gap(Mean)"]))
+    def get_latex_report_cmax(self):
+        print(self.df_report_cmax.to_latex(header=["Struct", "Instance", "C(BKS)", "C(Min)", "C(Max)", "C(Mean)", "C(Std)", "C(Var)", "Min", "Mean"]))
 
+    def get_latex_type_instances(self):
+        print(self.df)
+        df: pd.DataFrame = self.df.groupby(['struct', 'm' , 'n'], sort=False, as_index=False)['struct', 'm' , 'n']
+        df = df.mean().round()
+        df['instances'] = df['m'] - df['m'] + 5
+        print(df.to_latex())
+        
 
 if __name__ == "__main__":
     
@@ -39,5 +46,5 @@ if __name__ == "__main__":
     # literary initial solution
     l_is = os.path.join("amd", "report2.csv")
     
-    u = BuildPandas(g_is)
-    u.get_latex()
+    u = BuildPandas(l_is)
+    u.get_latex_type_instances()
