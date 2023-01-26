@@ -13,8 +13,9 @@ if __name__ == "__main__":
     if path is not None:
         inst = Convert(path)
         inst.to_string()
-        inst.write_file("text")
-    elif root is not None:
+        inst.write_file("convertida_uhull")
+        
+    if root is not None:
         for (_, _, paths) in os.walk(root):
             for path in paths:
                 inst = Convert(os.path.join(root + path))
