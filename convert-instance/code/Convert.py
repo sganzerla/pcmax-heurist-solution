@@ -1,5 +1,3 @@
-import numpy as np
-
 class Convert:
     def __init__(self, path: str):
         self.__data = open(path, 'r').readlines()
@@ -33,14 +31,12 @@ class Convert:
                 nd += self.__n 
                 x = [k for k in self.__s[st: nd]]
                 for j in range(0, self.__n):
-                    w.write(f"\n{i} {j+1} {x[j]}")
+                    w.write(f"\n{i} {j} {x[j]}")
                 st = nd
                    
                 
             w.close()
         
-        
-    
     def __extract_s__(self):
         jm = self.__n + self.__m
         st = jm + 2
@@ -53,21 +49,6 @@ class Convert:
         self.__s = x
         
     def __extract_p__(self) -> list:
-        # lin 2 até lin 2 + n jobs
         text = ' '.join(str(i) for i in self.__data[2: 2 + self.__n])
         self.__p = [int(i) for i in text.split() if i.isdigit()]
-    
-
-
-from optparse import OptionParser
- 
-if __name__ == "__main__":
-    parser = OptionParser()
-    parser.add_option('-r', '--file', dest="file")
-    (opts, _) = parser.parse_args()
-    path = opts.file
-    
-    inst = Convert(path)
-    inst.to_string()
-    inst.write_file("text")
     
