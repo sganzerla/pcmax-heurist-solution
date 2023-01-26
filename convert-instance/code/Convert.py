@@ -30,8 +30,18 @@ class Convert:
             for i in range(self.__n + 1):
                 nd += self.__n 
                 x = [k for k in self.__s[st: nd]]
-                for j in range(0, self.__n):
-                    w.write(f"\n{i} {j} {x[j]}")
+                ij_colision = False
+                for j in range(self.__n):
+                    if i == 0:                        
+                        w.write(f"\n{i} {j + 1} {x[j]}")
+                    else:
+                        if i == j:
+                            ij_colision = True
+                        
+                        if not ij_colision:
+                            w.write(f"\n{i} {j} {x[j]}")
+                        else:
+                            w.write(f"\n{i} {j + 1} {x[j]}")
                 st = nd
                    
                 
