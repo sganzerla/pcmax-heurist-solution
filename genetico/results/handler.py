@@ -4,7 +4,7 @@ import numpy as np
 
 class BuildPandas:
     def __init__(self, path: str ):
-        self.df: pd.DataFrame = pd.read_csv(path)
+        self.df: pd.DataFrame = pd.read_csv(path, decimal=",")
         self.df_report_cmax: pd.DataFrame
         self.build_report_cmax()
         
@@ -47,6 +47,13 @@ class BuildPandas:
         df['GAP'] = self.__calc_gap_min__(df, 'BKS(Mean)', 'GA(Mean)')
         df.index += 1
         print(df.to_latex())
+        
+    def get_mean_group_instances_type_mean_time(self) -> pd.DataFrame:
+       df = self.df[['struct','m', 'n', 'mean_time']]
+       df = df.groupby(['m', 'n' ],  sort=False, as_index=False)['mean_time'].aggregate({'Time(Mean)':'mean'})
+       df = df.round(2)
+       print(df.to_latex())
+       
     
 if __name__ == "__main__":
     
@@ -62,9 +69,6 @@ if __name__ == "__main__":
     report = [u_is, g_is, l_is]
     
     x = np.ndarray(3, dtype=pd.DataFrame)
-    for i in range(3):
-        u = BuildPandas(report[i])
-        df = u.get_mean_group_instances_type()
-        x[i] = df
-        print(x[i])
-            
+    for i in range(1):
+        u = BuildPandas(report[i]) 
+        u.get_mean_group_instances_type_mean_time()
